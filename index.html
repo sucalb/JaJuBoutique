@@ -3,282 +3,347 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>JaJu Boutique | Hồng sâm Hàn Quốc, mỹ phẩm, thời trang tại Houston</title>
-  <meta name="description" content="JaJu Boutique bán hồng sâm, hắc sâm Hàn Quốc, mỹ phẩm và thời trang. Houston, TX. Hotline 832-863-2592.">
+  <title>JaJu Boutique | Sâm Hàn Quốc, mỹ phẩm Nhật, thời trang tại Houston</title>
+  <meta name="description" content="JaJu Boutique: hồng sâm, hắc sâm Hàn Quốc, mỹ phẩm Nhật Hàn chính hãng và thời trang. Houston, TX. Hotline 832-863-2592.">
+  <meta name="theme-color" content="#6a2c84">
   <link rel="icon" href="assets/img/emblem.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="container topbar__inner">
-      <span>Miễn phí vận chuyển toàn nước Mỹ cho đơn từ $100</span>
-      <span class="hide-sm">Hotline: <a href="tel:+18328632592">832-863-2592</a> &nbsp;|&nbsp; <a href="mailto:jaju1411@gmail.com">jaju1411@gmail.com</a></span>
-    </div>
-  </div>
+  <!-- Dải khuyến mãi -->
+  <a class="promo-strip" href="#flash">
+    <span>FREESHIP toàn nước Mỹ cho đơn từ <b>$100</b></span>
+    <span class="promo-strip__pill">Mua ngay</span>
+  </a>
 
+  <!-- Header -->
   <header class="header" id="top">
-    <div class="container header__inner">
-      <button class="menu-toggle" aria-label="Mở menu" data-action="toggle-menu">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <div class="container header__main">
+      <button class="icon-btn only-mobile" data-action="open-menu" aria-label="Danh mục">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </button>
+      <a href="#top" class="logo"><img src="assets/img/logo.png" alt="JaJu Boutique"></a>
 
-      <a href="#top" class="brand"><img src="assets/img/logo.png" alt="JaJu Boutique"></a>
+      <div class="search-wrap">
+        <form class="search" role="search" data-search>
+          <input type="search" name="q" placeholder="Bạn muốn tìm gì hôm nay?" aria-label="Tìm sản phẩm" autocomplete="off">
+          <button type="submit" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        </form>
+        <div class="hot-keys" data-hot-keys></div>
+      </div>
 
-      <form class="search" role="search" data-search>
-        <input type="search" name="q" placeholder="Tìm sản phẩm..." aria-label="Tìm sản phẩm">
-        <button type="submit" aria-label="Tìm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-      </form>
-
-      <div class="header__right">
-        <a class="hotline hide-sm" href="tel:+18328632592">
-          <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
-          <span>Gọi đặt hàng<b>832-863-2592</b></span>
+      <div class="header__actions">
+        <a class="h-action only-desktop" href="tel:+18328632592">
+          <span class="h-action__icon"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+          <span class="h-action__text"><small>Hotline đặt hàng</small>832-863-2592</span>
         </a>
-        <button class="cart-btn" data-action="open-cart" aria-label="Giỏ hàng">
-          <svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-          <span class="hide-sm">Giỏ hàng</span>
-          <span class="cart-count" data-cart-count>0</span>
+        <a class="h-action only-desktop" href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener">
+          <span class="h-action__icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="3"/><path d="m10 9.5 4.5 2.5-4.5 2.5Z" fill="currentColor"/></svg></span>
+          <span class="h-action__text"><small>Live sale</small>Facebook</span>
+        </a>
+        <button class="h-action cart-trigger" data-action="open-cart" aria-label="Giỏ hàng">
+          <span class="h-action__icon">
+            <svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg>
+            <i class="badge-count" data-cart-count>0</i>
+          </span>
+          <span class="h-action__text only-desktop"><small>Giỏ hàng</small><span data-cart-total>$0.00</span></span>
         </button>
       </div>
     </div>
 
-    <nav class="nav" data-nav>
-      <div class="container nav__inner">
-        <a href="#shop" data-filter="all">Tất cả sản phẩm</a>
-        <a href="#shop" data-filter="hong-sam">Hồng sâm</a>
-        <a href="#shop" data-filter="hac-sam">Hắc sâm</a>
-        <a href="#shop" data-filter="nuoc-sam">Nước &amp; thạch sâm</a>
-        <a href="#shop" data-filter="beauty">Làm đẹp</a>
-        <a href="#shop" data-filter="fashion">Thời trang</a>
-        <a href="#shop" data-filter="sale">Sale</a>
-        <a href="#blog">Blog</a>
-        <a href="#contact">Liên hệ</a>
+    <div class="subnav only-desktop">
+      <div class="container subnav__inner">
+        <button class="cat-btn" data-action="scroll-shop">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          Danh mục sản phẩm
+        </button>
+        <ul class="trust">
+          <li><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>Cam kết hàng chính hãng</li>
+          <li><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Freeship đơn từ $100</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg>Đổi trả trong 7 ngày</li>
+          <li><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg>Thanh toán Zelle, Venmo</li>
+        </ul>
       </div>
-    </nav>
+    </div>
   </header>
 
-  <main>
-    <!-- Slider -->
-    <section class="hero container" aria-label="Banner">
-      <div class="hero__frame" data-slider>
-        <article class="slide slide--1 is-active">
-          <div class="slide__text">
-            <p class="slide__sub">Hàng Hàn Quốc chính hãng</p>
-            <h1>Hồng sâm, hắc sâm cho cả nhà</h1>
-            <p>Sâm lát tẩm mật ong, kẹo hắc sâm không đường, nước sâm, thạch hồng sâm 6 năm tuổi.</p>
-            <a href="#shop" class="btn" data-filter="hong-sam">Xem sản phẩm</a>
-          </div>
-          <div class="slide__img"><img src="assets/img/products/thach-hong-sam.jpg" alt="Thạch hồng sâm 6 năm tuổi"></div>
-        </article>
+  <main class="page">
 
-        <article class="slide slide--2">
-          <div class="slide__text">
-            <p class="slide__sub">Hàng mới về</p>
-            <h2>Xịt khoáng trà xanh Innisfree</h2>
-            <p>Cấp ẩm nhanh, xịt lên lớp trang điểm vẫn được.</p>
-            <a href="#shop" class="btn" data-filter="beauty">Mua ngay</a>
-          </div>
-          <div class="slide__img slide__img--cover"><img src="assets/img/products/matcha-lifestyle.jpg" alt="Xịt khoáng trà xanh Innisfree"></div>
-        </article>
+    <!-- Hero: menu + slider + banner phụ -->
+    <section class="container hero">
+      <aside class="side-menu" data-side-menu aria-label="Danh mục"></aside>
 
-        <article class="slide slide--3">
-          <div class="slide__text">
-            <p class="slide__sub">Quà biếu cuối năm</p>
-            <h2>Hộp quà sâm biếu ông bà, cha mẹ</h2>
-            <p>Shop gói quà miễn phí cho cả nhà.</p>
-            <a href="#shop" class="btn" data-filter="hac-sam">Chọn quà</a>
-          </div>
-          <div class="slide__img"><img src="assets/img/products/cao-hac-sam.jpg" alt="Hộp quà cao hắc sâm"></div>
-        </article>
-
-        <button class="hero__arrow hero__arrow--prev" data-slide="-1" aria-label="Trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-        <button class="hero__arrow hero__arrow--next" data-slide="1" aria-label="Sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-        <div class="hero__dots" data-dots></div>
+      <div class="slider" data-slider>
+        <div class="slides">
+          <a class="slide slide--ginseng is-active" href="#cat-ginseng">
+            <div class="slide__copy">
+              <span class="slide__eyebrow">Hàng Hàn Quốc chính hãng</span>
+              <h1>SÂM HÀN<br><span>quà sức khỏe cả nhà</span></h1>
+              <p>Hồng sâm, hắc sâm, nước sâm, thạch sâm 6 năm tuổi</p>
+              <span class="slide__deal">Giảm đến <b>32%</b></span>
+            </div>
+            <div class="slide__art">
+              <img class="a1" src="assets/img/products/thach-hong-sam.jpg" alt="">
+              <img class="a2" src="assets/img/products/hac-sam-cu.jpg" alt="">
+              <img class="a3" src="assets/img/products/keo-hac-sam.jpg" alt="">
+            </div>
+          </a>
+          <a class="slide slide--beauty" href="#beauty">
+            <img class="slide__bg" src="assets/img/products/matcha-lifestyle.jpg" alt="">
+            <div class="slide__copy">
+              <span class="slide__eyebrow">Mới về</span>
+              <h2>Xịt khoáng<br><span>trà xanh Innisfree</span></h2>
+              <p>Cấp ẩm tức thì, da căng mọng cả ngày</p>
+              <span class="slide__deal">Chỉ <b>$18</b></span>
+            </div>
+          </a>
+          <a class="slide slide--gift" href="#cat-ginseng">
+            <div class="slide__copy">
+              <span class="slide__eyebrow">Quà biếu cuối năm</span>
+              <h2>HỘP QUÀ SÂM<br><span>gói quà miễn phí</span></h2>
+              <p>Biếu ông bà, cha mẹ, đối tác dịp lễ Tết</p>
+              <span class="slide__deal">Từ <b>$35</b></span>
+            </div>
+            <div class="slide__art">
+              <img class="a1" src="assets/img/products/cao-hac-sam.jpg" alt="">
+              <img class="a2" src="assets/img/products/nuoc-sam-nui.jpg" alt="">
+            </div>
+          </a>
+        </div>
+        <button class="slider__nav prev" data-slide="-1" aria-label="Banner trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="slider__nav next" data-slide="1" aria-label="Banner sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+        <div class="slider__dots" data-dots></div>
       </div>
-    </section>
 
-    <!-- Giới thiệu -->
-    <section class="intro container" id="about">
-      <img class="intro__img" src="assets/img/emblem.jpg" alt="JaJu Boutique">
-      <div>
-        <h2 class="intro__title">JaJu Boutique</h2>
-        <p>Hello cả nhà, mình là Vân. Mình đang sống ở Houston và làm trong ngành healthcare. Ngoài giờ làm thì mình mê thời trang, làm đẹp và chăm sóc sức khỏe, nên JaJu Boutique ra đời để chia sẻ những món mình dùng thấy ổn với mọi người.</p>
-        <p>Shop chủ yếu bán hồng sâm, hắc sâm Hàn Quốc, mỹ phẩm và quần áo. Hàng về tới đâu Vân lên live tới đó, cả nhà theo dõi page để săn giá tốt nha.</p>
-        <p>Cần tư vấn thì cứ gọi hoặc nhắn Vân: <a href="tel:+18328632592">832-863-2592</a>.</p>
-      </div>
-    </section>
-
-    <!-- Sale -->
-    <section class="block container" id="sale">
-      <div class="block__head">
-        <h2>Sale</h2>
-        <a href="#shop" data-filter="sale">Xem thêm</a>
-      </div>
-      <div class="grid" data-sale-grid></div>
-    </section>
-
-    <!-- Danh mục -->
-    <section class="block container">
-      <div class="block__head">
-        <h2>Danh mục sản phẩm</h2>
-      </div>
-      <div class="cats" data-cats></div>
-    </section>
-
-    <!-- Banner đôi -->
-    <section class="block container">
-      <div class="banners">
-        <a href="#shop" data-filter="hac-sam" class="banner banner--a">
-          <div>
-            <p class="slide__sub">Combo tiết kiệm</p>
-            <h3>Mua 3 gói kẹo hắc sâm chỉ $39</h3>
-            <span class="link">Mua ngay</span>
-          </div>
+      <div class="side-banners">
+        <a class="mini-banner mb-1" href="#vouchers">
+          <div><b>FREESHIP</b><span>toàn nước Mỹ<br>đơn từ $100</span></div>
+          <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+        </a>
+        <a class="mini-banner mb-2" href="#cat-ginseng">
+          <div><b>Combo 3 gói</b><span>kẹo hắc sâm<br>chỉ $39</span></div>
           <img src="assets/img/products/keo-hac-sam.jpg" alt="">
         </a>
-        <a href="#shop" data-filter="nuoc-sam" class="banner banner--b">
-          <div>
-            <p class="slide__sub">Dùng mỗi ngày</p>
-            <h3>Thạch hồng sâm dạng que, tiện mang đi làm</h3>
-            <span class="link">Xem chi tiết</span>
-          </div>
-          <img src="assets/img/products/thach-hong-sam.jpg" alt="">
+        <a class="mini-banner mb-3" href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener">
+          <div><b>LIVE SALE</b><span>mỗi tuần cùng Vân<br>trên Facebook</span></div>
+          <img src="assets/img/emblem.jpg" alt="" class="round">
         </a>
       </div>
+    </section>
+
+    <!-- Danh mục nhanh -->
+    <section class="container panel quick-cats" aria-label="Danh mục nhanh">
+      <div class="quick-cats__list" data-quick-cats></div>
+    </section>
+
+    <!-- Voucher -->
+    <section class="container" id="vouchers">
+      <h2 class="sec-title">Ưu đãi độc quyền website</h2>
+      <div class="vouchers" data-vouchers></div>
+    </section>
+
+    <!-- Flash sale -->
+    <section class="container" id="flash">
+      <div class="flash">
+        <div class="flash__head">
+          <div class="flash__title">
+            <span class="flash__logo">FLASH SALE</span>
+            <div class="countdown" data-countdown aria-label="Thời gian còn lại">
+              <span data-h>00</span><i>:</i><span data-m>00</span><i>:</i><span data-s>00</span>
+            </div>
+          </div>
+          <div class="carousel-nav">
+            <button data-scroll="flash" data-dir="-1" aria-label="Trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button data-scroll="flash" data-dir="1" aria-label="Sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+        </div>
+        <div class="carousel" data-carousel="flash"></div>
+      </div>
+    </section>
+
+    <!-- Banner hàng ngang -->
+    <section class="container promo-row">
+      <a href="#cat-ginseng" class="promo promo--a">
+        <div><small>Quà biếu</small><b>Sang trọng<br>ý nghĩa</b></div>
+        <img src="assets/img/products/cao-hac-sam.jpg" alt="">
+      </a>
+      <a href="#beauty" class="promo promo--b">
+        <div><small>Làm đẹp</small><b>Da ẩm mượt<br>mỗi ngày</b></div>
+        <img src="assets/img/products/matcha-mist-2.jpg" alt="">
+      </a>
+      <a href="#cat-ginseng" class="promo promo--c">
+        <div><small>Sức khỏe</small><b>Mỗi ngày<br>một que sâm</b></div>
+        <img src="assets/img/products/thach-hong-sam.jpg" alt="">
+      </a>
+      <a href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener" class="promo promo--d">
+        <div><small>Thời trang</small><b>Áo len từ $10<br>trong live</b></div>
+        <img src="assets/img/emblem.jpg" alt="">
+      </a>
+    </section>
+
+    <!-- Khu sâm Hàn Quốc -->
+    <section class="container cat-block" id="cat-ginseng">
+      <div class="cat-block__head">
+        <h2 class="sec-title">Sâm Hàn Quốc</h2>
+        <div class="chips" data-chips="ginseng"></div>
+      </div>
+      <div class="cat-block__body">
+        <a class="tall-banner tall-banner--ginseng" href="#shop" data-filter="ginseng">
+          <span class="tall-banner__tag">Chính hãng Hàn Quốc</span>
+          <b>Sức khỏe<br>cho cả nhà</b>
+          <span class="tall-banner__cta">Xem tất cả</span>
+          <img src="assets/img/products/hong-sam-lat.jpg" alt="">
+          <img src="assets/img/products/nuoc-sam-nui.jpg" alt="">
+        </a>
+        <div class="grid grid--4" data-grid="ginseng"></div>
+      </div>
+      <div class="center"><a class="btn-outline" href="#shop" data-filter="ginseng">Xem tất cả sâm Hàn Quốc</a></div>
+    </section>
+
+    <!-- Khu làm đẹp: sản phẩm nổi bật -->
+    <section class="container cat-block" id="beauty">
+      <div class="cat-block__head">
+        <h2 class="sec-title">Mỹ phẩm &amp; làm đẹp</h2>
+        <div class="chips"><a class="chip is-active" href="#beauty">Chăm sóc da</a><a class="chip" href="#beauty">Trang điểm</a><a class="chip" href="#beauty">Hàng Nhật</a></div>
+      </div>
+      <div class="spotlight" data-spotlight></div>
     </section>
 
     <!-- Tất cả sản phẩm -->
-    <section class="block container" id="shop">
-      <div class="block__head">
-        <h2 data-shop-title>Tất cả sản phẩm</h2>
-        <select class="sort" data-sort aria-label="Sắp xếp">
-          <option value="featured">Mặc định</option>
-          <option value="price-asc">Giá tăng dần</option>
-          <option value="price-desc">Giá giảm dần</option>
-          <option value="name">Tên A-Z</option>
+    <section class="container panel" id="shop">
+      <div class="shop-head">
+        <h2 class="sec-title" data-shop-title>Gợi ý cho bạn</h2>
+        <select class="select" data-sort aria-label="Sắp xếp">
+          <option value="featured">Sắp xếp: Nổi bật</option>
+          <option value="discount">Giảm giá nhiều</option>
+          <option value="price-asc">Giá thấp đến cao</option>
+          <option value="price-desc">Giá cao đến thấp</option>
         </select>
       </div>
-      <div class="tabs" data-chips></div>
-      <div class="grid" data-shop-grid></div>
-      <p class="empty" data-empty hidden></p>
+      <div class="tabs" data-tabs></div>
+      <div class="grid grid--5" data-grid="shop"></div>
+      <div class="empty" data-empty hidden></div>
     </section>
 
-    <!-- Vì sao chọn -->
-    <section class="why">
-      <div class="container">
-        <h2>Mua hàng ở JaJu</h2>
-        <div class="why__grid">
-          <div>
-            <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>
-            <h3>Hàng chính hãng</h3>
-            <p>Sâm nhập từ Hàn, còn nguyên tem nhãn. Mỹ phẩm mua từ nhà phân phối.</p>
-          </div>
-          <div>
-            <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
-            <h3>Ship toàn nước Mỹ</h3>
-            <p>Freeship đơn từ $100. Ở Houston có thể hẹn lấy hàng trực tiếp.</p>
-          </div>
-          <div>
-            <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
-            <h3>Zelle, Venmo</h3>
-            <p>Chuyển khoản xong nhắn Vân, shop xác nhận rồi gửi hàng liền.</p>
-          </div>
-          <div>
-            <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3 6.2L4 20l1-3.5A8 8 0 0 1 4 12Z"/></svg>
-            <h3>Đổi trả 7 ngày</h3>
-            <p>Hàng lỗi do nhà sản xuất hoặc giao sai, shop đổi lại cho cả nhà.</p>
-          </div>
-        </div>
-      </div>
+    <!-- Cam kết -->
+    <section class="container commit">
+      <div><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg><b>100% chính hãng</b><span>Nguồn gốc Nhật, Hàn rõ ràng</span></div>
+      <div><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><b>Giao toàn nước Mỹ</b><span>Freeship đơn từ $100</span></div>
+      <div><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg><b>Đổi trả 7 ngày</b><span>Hàng lỗi, giao sai được đổi</span></div>
+      <div><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4Z"/><path d="M8 10h8"/></svg><b>Tư vấn tận tình</b><span>Gọi, nhắn Vân bất cứ lúc nào</span></div>
     </section>
 
-    <!-- Blog -->
-    <section class="block container" id="blog">
-      <div class="block__head">
-        <h2>Blog</h2>
-        <a href="#blog">Xem tất cả</a>
+    <!-- Cẩm nang -->
+    <section class="container" id="blog">
+      <div class="shop-head">
+        <h2 class="sec-title">Cẩm nang sức khỏe &amp; làm đẹp</h2>
+        <a class="link-more" href="#blog">Xem tất cả</a>
       </div>
       <div class="blog">
-        <article class="post">
-          <a href="#blog" class="post__img"><img src="assets/img/products/matcha-mist-4.jpg" alt=""></a>
-          <time>12/10/2026</time>
-          <h3><a href="#blog">Da khô dưỡng hoài không đỡ, có thể do bạn đang làm sai bước này</a></h3>
-          <p>Sáng skincare xong da mềm, tới trưa lại căng rát. Vân chia sẻ vài thói quen nhỏ giúp da giữ ẩm lâu hơn.</p>
-        </article>
-        <article class="post">
-          <a href="#blog" class="post__img"><img src="assets/img/products/hac-sam-cu.jpg" alt=""></a>
-          <time>05/10/2026</time>
-          <h3><a href="#blog">Hồng sâm và hắc sâm khác nhau chỗ nào?</a></h3>
-          <p>Cùng là sâm Hàn nhưng cách chế biến khác nhau nên màu, vị cũng khác. Đọc để chọn loại hợp với nhà mình.</p>
-        </article>
-        <article class="post">
-          <a href="#blog" class="post__img"><img src="assets/img/products/gia-dinh.jpg" alt=""></a>
-          <time>28/09/2026</time>
-          <h3><a href="#blog">Gợi ý quà biếu cuối năm cho ông bà, cha mẹ</a></h3>
-          <p>Vài hộp quà sâm dễ chọn, giá từ $35 tới $90, gói sẵn để biếu.</p>
-        </article>
+        <a class="post" href="#blog">
+          <div class="post__img"><img src="assets/img/products/matcha-mist-4.jpg" alt=""></div>
+          <div class="post__body"><span class="post__tag">Làm đẹp</span><h3>Da khô dưỡng hoài không đỡ? Có thể bạn đang bỏ qua bước này</h3><time>12/10/2026</time></div>
+        </a>
+        <a class="post" href="#blog">
+          <div class="post__img"><img src="assets/img/products/hac-sam-cu.jpg" alt=""></div>
+          <div class="post__body"><span class="post__tag">Sức khỏe</span><h3>Hồng sâm và hắc sâm khác nhau thế nào? Chọn loại nào cho gia đình</h3><time>05/10/2026</time></div>
+        </a>
+        <a class="post" href="#blog">
+          <div class="post__img"><img src="assets/img/products/gia-dinh.jpg" alt=""></div>
+          <div class="post__body"><span class="post__tag">Quà tặng</span><h3>Gợi ý quà biếu cuối năm cho ông bà, cha mẹ từ $35</h3><time>28/09/2026</time></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Theo dõi -->
+    <section class="container">
+      <div class="follow">
+        <img src="assets/img/emblem.jpg" alt="">
+        <div class="follow__text">
+          <b>Theo dõi JaJu Boutique trên Facebook</b>
+          <span>Hơn 7.000 người đang theo dõi. Vân lên live mỗi tuần với giá ưu đãi chỉ có trong live.</span>
+        </div>
+        <a class="btn" href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener">Theo dõi ngay</a>
       </div>
     </section>
   </main>
 
   <footer class="footer" id="contact">
     <div class="container footer__grid">
-      <div>
-        <h4>JaJu Boutique</h4>
-        <p>Hồng sâm Hàn Quốc, mỹ phẩm và thời trang.<br>Houston, TX, United States</p>
-        <p>Điện thoại: <a href="tel:+18328632592">832-863-2592</a> (Vân)<br>Email: <a href="mailto:jaju1411@gmail.com">jaju1411@gmail.com</a></p>
-        <p><a href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener" class="u">Facebook JaJu Boutique</a></p>
+      <div class="footer__brand">
+        <img src="assets/img/logo.png" alt="JaJu Boutique">
+        <p>Sâm Hàn Quốc, mỹ phẩm Nhật Hàn chính hãng và thời trang. Tuyển chọn bởi Vân tại Houston, TX.</p>
       </div>
       <div>
-        <h4>Sản phẩm</h4>
-        <a href="#shop" data-filter="hong-sam">Hồng sâm</a>
-        <a href="#shop" data-filter="hac-sam">Hắc sâm</a>
-        <a href="#shop" data-filter="nuoc-sam">Nước &amp; thạch sâm</a>
-        <a href="#shop" data-filter="beauty">Làm đẹp</a>
-        <a href="#shop" data-filter="sale">Sale</a>
+        <h4>Liên hệ</h4>
+        <p>Houston, TX, United States</p>
+        <p>Hotline: <a href="tel:+18328632592">832-863-2592</a></p>
+        <p>Email: <a href="mailto:jaju1411@gmail.com">jaju1411@gmail.com</a></p>
+        <p><a href="https://www.facebook.com/huongthuyxom8binhnghia" target="_blank" rel="noopener">Facebook: JaJu Boutique</a></p>
       </div>
       <div>
-        <h4>Hỗ trợ</h4>
+        <h4>Hỗ trợ khách hàng</h4>
+        <a href="#pay">Hướng dẫn mua hàng</a>
         <a href="#pay">Hướng dẫn thanh toán</a>
         <a href="#contact">Chính sách giao hàng</a>
         <a href="#contact">Chính sách đổi trả</a>
-        <a href="#about">Giới thiệu</a>
       </div>
       <div id="pay">
         <h4>Thanh toán</h4>
-        <p><b>Zelle:</b> JaJu Boutique<br>832-419-9799</p>
-        <p><b>Venmo:</b> Van-Than-1</p>
-        <p class="small">Ghi tên và số điện thoại trong nội dung chuyển khoản giúp shop nha.</p>
+        <div class="pay-card"><span class="pay-logo zelle">Zelle</span><div>JaJu Boutique<br><b>832-419-9799</b></div></div>
+        <div class="pay-card"><span class="pay-logo venmo">venmo</span><div><b>@Van-Than-1</b></div></div>
       </div>
     </div>
     <div class="footer__bottom">
-      <div class="container">© <span data-year></span> JaJu Boutique. Sản phẩm này không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.</div>
+      <div class="container">© <span data-year></span> JaJu Boutique. Thực phẩm này không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.</div>
     </div>
   </footer>
 
-  <!-- Giỏ hàng -->
+  <!-- Nút liên hệ nổi -->
+  <div class="float-actions">
+    <a href="tel:+18328632592" class="fa fa--call" aria-label="Gọi cho shop"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></a>
+    <button class="fa fa--top" data-action="to-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg></button>
+  </div>
+
+  <!-- Thanh điều hướng mobile -->
+  <nav class="bottom-nav only-mobile" aria-label="Điều hướng">
+    <a href="#top"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3Z"/></svg>Trang chủ</a>
+    <button data-action="open-menu"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Danh mục</button>
+    <a href="#flash"><svg viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg>Flash sale</a>
+    <button data-action="open-cart"><span class="bn-cart"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg><i class="badge-count" data-cart-count>0</i></span>Giỏ hàng</button>
+    <a href="tel:+18328632592"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Gọi shop</a>
+  </nav>
+
+  <!-- Menu mobile -->
   <div class="overlay" data-overlay></div>
-  <aside class="drawer" data-drawer aria-label="Giỏ hàng" aria-hidden="true">
-    <div class="drawer__head">
-      <h3>Giỏ hàng</h3>
-      <button class="x" data-action="close-cart" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-    </div>
-    <p class="ship-note" data-ship-note></p>
-    <div class="drawer__body" data-cart-items></div>
-    <div class="drawer__foot">
-      <div class="row"><span>Tạm tính</span><b data-cart-subtotal>$0.00</b></div>
-      <button class="btn btn--block" data-action="checkout">Đặt hàng</button>
-      <button class="link-btn center" data-action="close-cart">Tiếp tục mua sắm</button>
+  <aside class="sheet sheet--left" data-menu aria-hidden="true">
+    <div class="sheet__head"><img src="assets/img/logo.png" alt="JaJu Boutique"><button class="icon-btn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="sheet__body" data-menu-list></div>
+  </aside>
+
+  <!-- Giỏ hàng -->
+  <aside class="sheet sheet--right" data-drawer aria-hidden="true">
+    <div class="sheet__head"><h3>Giỏ hàng <span data-cart-count-text></span></h3><button class="icon-btn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="ship-meter"><p data-ship-note></p><div class="ship-meter__bar"><i data-ship-bar></i></div></div>
+    <div class="sheet__body" data-cart-items></div>
+    <div class="sheet__foot">
+      <form class="coupon" data-coupon-form>
+        <input name="code" placeholder="Nhập mã giảm giá" aria-label="Mã giảm giá" autocomplete="off">
+        <button type="submit">Áp dụng</button>
+      </form>
+      <p class="coupon-msg" data-coupon-msg></p>
+      <div class="totals" data-totals></div>
+      <button class="btn btn--block" data-action="checkout">Thanh toán</button>
     </div>
   </aside>
 
   <div class="modal" data-modal aria-hidden="true">
     <div class="modal__box" role="dialog" aria-modal="true">
-      <button class="x modal__close" data-action="close-modal" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="icon-btn modal__close" data-action="close-modal" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div data-modal-content></div>
     </div>
   </div>
