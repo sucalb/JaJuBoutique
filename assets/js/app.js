@@ -1,70 +1,36 @@
 (() => {
   'use strict';
 
-  const IMG = 'assets/img/products/';
-  const FB = 'https://www.facebook.com/huongthuyxom8binhnghia';
-  const FREESHIP = 100;
-  const SHIPPING = 8;
-
   /* ================= Dữ liệu =================
-     Giá, tên sản phẩm và mã giảm giá là số liệu mẫu, thay bằng thông tin thật của shop. */
-  const CATS = {
-    'hong-sam': { name: 'Hồng sâm', img: IMG + 'hong-sam-lat.jpg', bg: '#fff1e6', group: 'ginseng' },
-    'hac-sam':  { name: 'Hắc sâm', img: IMG + 'hac-sam-cu.jpg', bg: '#f1ece6', group: 'ginseng' },
-    'nuoc-sam': { name: 'Nước & thạch sâm', img: IMG + 'nuoc-sam-nui.jpg', bg: '#fdeceb', group: 'ginseng' },
-    combo:      { name: 'Combo quà biếu', img: IMG + 'cao-hac-sam.jpg', bg: '#f3eaf7', group: 'ginseng' },
-    beauty:     { name: 'Mỹ phẩm', img: IMG + 'matcha-mist.jpg', bg: '#e9f3e6', cover: true },
-    japan:      { name: 'Hàng Nhật', img: IMG + 'matcha-mist-3.jpg', bg: '#fdeef4', cover: true, soon: true },
-    fashion:    { name: 'Thời trang', img: 'assets/img/emblem.jpg', bg: '#e8f0ef', cover: true, soon: true }
-  };
+     Nội dung cửa hàng nằm ở data/store.js và được sửa qua trang admin.html.
+     Mở index.html?preview=1 để xem bản nháp đang sửa trong trang quản trị. */
+  const PREVIEW = new URLSearchParams(location.search).has('preview');
+  const readDraft = () => { try { return JSON.parse(localStorage.getItem('jaju-admin-draft')); } catch { return null; } };
+  const STORE = (PREVIEW && readDraft()) || window.JAJU_STORE;
+  if (!STORE) { document.body.insertAdjacentHTML('afterbegin', '<p style="padding:20px">Không tải được dữ liệu cửa hàng.</p>'); return; }
 
-  const PRODUCTS = [
-    { id: 'hc1', cat: 'hac-sam', brand: 'Hàn Quốc', name: 'Kẹo hắc sâm không đường Hàn Quốc', price: 15, compare: 19, img: 'keo-hac-sam.jpg', tag: 'Bán chạy',
-      opts: ['Gói 200g', 'Gói 500g'], desc: 'Kẹo hắc sâm không đường, vị ngọt nhẹ, ngậm mỗi ngày. Người lớn tuổi hoặc đang ăn kiêng đường dùng được.' },
-    { id: 'hs1', cat: 'hong-sam', brand: 'Hàn Quốc', name: 'Hồng sâm lát tẩm mật ong (hũ)', price: 42, compare: 52, img: 'hong-sam-lat.jpg',
-      desc: 'Hồng sâm Hàn Quốc thái lát, tẩm mật ong. Ăn trực tiếp hoặc pha nước nóng uống như trà.' },
-    { id: 'ns2', cat: 'nuoc-sam', brand: 'Hàn Quốc', name: 'Thạch hồng sâm 6 năm tuổi Daily Jelly Stick', price: 35, compare: null, img: 'thach-hong-sam.jpg', tag: 'Mới về',
-      desc: 'Thạch hồng sâm dạng que, xé ra ăn liền, bỏ túi mang đi làm, đi học tiện.' },
-    { id: 'hc2', cat: 'hac-sam', brand: 'Hàn Quốc', name: 'Hắc sâm củ tẩm mật ong (hũ)', price: 48, compare: null, img: 'hac-sam-cu.jpg',
-      desc: 'Hắc sâm nguyên củ hấp sấy nhiều lần rồi tẩm mật ong, ăn mềm, vị đậm.' },
-    { id: 'ns1', cat: 'nuoc-sam', brand: 'Hàn Quốc', name: 'Nước sâm núi Hàn Quốc, hộp 30 ống', price: 65, compare: 79, img: 'nuoc-sam-nui.jpg',
-      desc: 'Hộp 30 ống nước sâm núi, hộp giấy cứng, mua về biếu luôn được.' },
-    { id: 'hc3', cat: 'combo', brand: 'Hàn Quốc', name: 'Hộp quà cao hắc sâm', price: 89, compare: 110, img: 'cao-hac-sam.jpg', tag: 'Quà biếu',
-      desc: 'Hộp quà gồm cao hắc sâm và củ sâm, hộp đẹp, hợp làm quà biếu.' },
-    { id: 'bt1', cat: 'beauty', brand: 'Innisfree', name: 'Xịt khoáng trà xanh Innisfree Green Tea Matcha Mist', price: 18, compare: 22, img: 'matcha-mist.jpg',
-      gallery: ['matcha-mist.jpg', 'matcha-mist-2.jpg', 'matcha-mist-3.jpg', 'matcha-mist-4.jpg'],
-      desc: 'Xịt khoáng chiết xuất trà xanh và matcha Jeju. Cấp ẩm tức thì, làm dịu da, xịt được cả khi đã trang điểm.' },
-    { id: 'hs2', cat: 'hong-sam', brand: 'Hàn Quốc', name: 'Kẹo dẻo hồng sâm Hàn Quốc (gói)', price: 16, compare: null, img: 'hong-sam-deo.jpg',
-      desc: 'Kẹo dẻo hồng sâm gói lớn, cả nhà ăn chung.' },
-    { id: 'hc4', cat: 'hac-sam', brand: 'Hàn Quốc', name: 'Hắc sâm tẩm mật ong dạng gói', price: 28, compare: 34, img: 'hac-sam-goi.jpg',
-      desc: 'Hắc sâm tẩm mật ong đóng gói nhỏ, dễ mang theo.' },
-    { id: 'cb1', cat: 'combo', brand: 'Combo', name: 'Combo 3 gói kẹo hắc sâm không đường', price: 39, compare: 57, img: 'keo-hac-sam.jpg', tag: 'Tiết kiệm',
-      desc: 'Mua 3 gói rẻ hơn mua lẻ. Dùng dần hoặc chia cho người thân.' },
-    { id: 'cb2', cat: 'combo', brand: 'Combo', name: 'Combo 2 hũ hồng sâm lát tẩm mật ong', price: 78, compare: 104, img: 'hong-sam-lat.jpg',
-      desc: '2 hũ hồng sâm lát, một hũ dùng, một hũ biếu.' },
-    { id: 'cb3', cat: 'combo', brand: 'Combo', name: 'Combo 2 hộp thạch hồng sâm Daily Jelly Stick', price: 66, compare: 70, img: 'thach-hong-sam.jpg',
-      desc: '2 hộp thạch hồng sâm dạng que.' }
-  ];
-  PRODUCTS.forEach((p, i) => { p.order = i; p.src = IMG + p.img; });
-
-  const VOUCHERS = [
-    { code: 'FREESHIP', big: 'FREE', small: 'SHIP', title: 'Miễn phí vận chuyển', note: 'Đơn hàng từ $100', type: 'ship', min: 100 },
-    { code: 'JAJU5', big: '$5', small: 'GIẢM', title: 'Giảm $5', note: 'Đơn hàng từ $50', type: 'amount', value: 5, min: 50 },
-    { code: 'JAJU10', big: '$10', small: 'GIẢM', title: 'Giảm $10', note: 'Đơn hàng từ $99', type: 'amount', value: 10, min: 99 },
-    { code: 'SAM15', big: '15%', small: 'GIẢM', title: 'Giảm 15% sâm Hàn', note: 'Đơn sâm từ $120', type: 'percent', value: 15, min: 120 }
-  ];
-
-  const HOT_KEYS = ['Hồng sâm', 'Kẹo hắc sâm', 'Nước sâm', 'Xịt khoáng', 'Quà biếu'];
+  const S = STORE.settings;
+  const FREESHIP = +S.freeship || 0;
+  const SHIPPING = +S.shippingFee || 0;
+  const PRODUCTS = STORE.products.filter(p => !p.hidden);
+  PRODUCTS.forEach((p, i) => { p.order = i; });
+  const CATS = Object.fromEntries(STORE.categories.map(c => [c.id, c]));
+  const GROUPS = STORE.groups;
+  const VOUCHERS = STORE.vouchers;
 
   /* ================= Tiện ích ================= */
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-  const money = n => '$' + n.toFixed(2);
+  const money = n => '$' + (+n).toFixed(2);
   const byId = id => PRODUCTS.find(p => p.id === id);
-  const isSale = p => !!p.compare;
+  const isSale = p => +p.compare > +p.price;
   const offPct = p => isSale(p) ? Math.round((1 - p.price / p.compare) * 100) : 0;
-  const inGroup = (p, g) => g === 'all' || p.cat === g || CATS[p.cat].group === g || (g === 'sale' && isSale(p));
+  const catName = id => CATS[id]?.name || '';
+  const groupOf = p => CATS[p.cat]?.group;
+  const inFilter = (p, f) => f === 'all' || p.cat === f || groupOf(p) === f || (f === 'sale' && isSale(p));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const tone = c => 'tone-' + (c || 'lavender');
+  const ext = href => /^https?:/.test(href || '') ? ' target="_blank" rel="noopener"' : '';
   const store = {
     get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* bỏ qua */ } }
@@ -76,25 +42,58 @@
     shield: '<svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>',
     truck: '<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
     back: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg>',
-    gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10 3 7.5 4.5 9 8 12 8Zm0 0s2-5 4.5-3.5S15 8 12 8Z"/></svg>'
+    gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10 3 7.5 4.5 9 8 12 8Zm0 0s2-5 4.5-3.5S15 8 12 8Z"/></svg>',
+    tag: '<svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>'
   };
 
-  let cart = store.get('jaju-cart-v4', []).filter(i => byId(i.id));
+  let cart = store.get('jaju-cart-v5', []).filter(i => byId(i.id));
   let coupon = store.get('jaju-coupon', null);
   const state = { filter: 'all', sort: 'featured', q: '' };
+
+  /* ================= Thông tin chung ================= */
+  function applySettings() {
+    const t = S.theme || {};
+    const root = document.documentElement.style;
+    if (t.primary) { root.setProperty('--plum', t.primary); root.setProperty('--plum-700', shade(t.primary, -.22)); root.setProperty('--plum-50', mix(t.primary, .92)); }
+    if (t.accent) { root.setProperty('--pink', t.accent); root.setProperty('--pink-50', mix(t.accent, .93)); }
+    if (t.bg) root.setProperty('--bg', t.bg);
+    $('meta[name="theme-color"]').content = t.primary || '#7b3f9e';
+
+    $('[data-promo-text]').textContent = S.promoText || '';
+    $$('[data-text]').forEach(el => { el.textContent = S[el.dataset.text] ?? ''; });
+    const links = { tel: 'tel:' + (S.hotline || ''), email: 'mailto:' + (S.email || ''), facebook: S.facebook || '#' };
+    $$('[data-link]').forEach(el => { el.href = links[el.dataset.link]; });
+    $('[data-hot-keys]').innerHTML = (S.hotKeys || []).map(k => `<button type="button" data-key="${esc(k)}">${esc(k)}</button>`).join('');
+    $('[data-pay-cards]').innerHTML = payCard('Zelle') + payCard('Venmo');
+    $('[data-year]').textContent = new Date().getFullYear();
+    if (PREVIEW) $('[data-preview-bar]').hidden = false;
+  }
+
+  function payCard(type) {
+    return type === 'Zelle'
+      ? `<div class="pay-card"><span class="pay-logo zelle">Zelle</span><div>${esc(S.zelleName)}<br><b>${esc(S.zellePhone)}</b></div></div>`
+      : `<div class="pay-card"><span class="pay-logo venmo">venmo</span><div><b>${esc(S.venmo)}</b></div></div>`;
+  }
+
+  // Pha màu nhạt / đậm từ màu chủ đạo
+  function hexToRgb(h) { const m = h.replace('#', '').match(/.{2}/g); return m ? m.map(x => parseInt(x, 16)) : [123, 63, 158]; }
+  function rgbToHex(r) { return '#' + r.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join(''); }
+  function mix(h, w) { return rgbToHex(hexToRgb(h).map(v => v + (255 - v) * w)); }
+  function shade(h, k) { return rgbToHex(hexToRgb(h).map(v => v * (1 + k))); }
 
   /* ================= Thẻ sản phẩm ================= */
   function card(p) {
     const off = offPct(p);
+    const demo = /minh họa/i.test(p.brand || '');
     return `
       <div class="pcard">
         <div class="pcard__img" data-view="${p.id}">
-          ${p.tag ? `<span class="pcard__tag">${p.tag}</span>` : ''}
+          ${p.tag ? `<span class="pcard__tag">${esc(p.tag)}</span>` : ''}
           ${off ? `<span class="pcard__off">-${off}%</span>` : ''}
-          <img src="${p.src}" alt="${esc(p.name)}" loading="lazy">
+          <img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">
         </div>
         <div class="pcard__body">
-          <span class="pcard__brand">${esc(p.brand)}</span>
+          <span class="pcard__brand ${demo ? 'demo' : ''}">${esc(p.brand || catName(p.cat))}</span>
           <h3 class="pcard__name" data-view="${p.id}">${esc(p.name)}</h3>
           <div class="pcard__price"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s>` : ''}</div>
           <button class="pcard__add" data-add="${p.id}">${ICON.cart} Thêm vào giỏ</button>
@@ -103,73 +102,140 @@
   }
 
   /* ================= Các khu vực ================= */
-  function renderMenus() {
-    const items = Object.entries(CATS);
+  function renderHero() {
     $('[data-side-menu]').innerHTML =
-      `<a href="#flash" class="hot"><img src="${IMG}cao-hac-sam.jpg" alt="">Deal hot hôm nay${ICON.chev}</a>` +
-      items.map(([k, c]) => `<a href="#shop" data-filter="${k}"><img src="${c.img}" alt="">${c.name}${ICON.chev}</a>`).join('') +
-      `<a href="#blog"><img src="${IMG}gia-dinh.jpg" alt="">Cẩm nang${ICON.chev}</a>`;
+      `<a href="#flash" class="hot"><img src="${esc(STORE.categories[0]?.img || '')}" alt="">Deal hot hôm nay${ICON.chev}</a>` +
+      STORE.categories.map(c => `<a href="#shop" data-filter="${c.id}"><img src="${esc(c.img)}" alt="">${esc(c.name)}${ICON.chev}</a>`).join('');
+
+    $('[data-slides]').innerHTML = STORE.slides.map((s, i) => `
+      <a class="slide ${tone(s.color)} ${i ? '' : 'is-active'}" href="${esc(s.link || '#shop')}"${ext(s.link)}>
+        ${s.photo ? `<img class="slide__bg" src="${esc(s.photo)}" alt="">` : ''}
+        <div class="slide__copy">
+          ${s.eyebrow ? `<span class="slide__eyebrow">${esc(s.eyebrow)}</span>` : ''}
+          ${i ? '<h2>' : '<h1>'}${esc(s.title)}${s.subtitle ? `<span>${esc(s.subtitle)}</span>` : ''}${i ? '</h2>' : '</h1>'}
+          ${s.text ? `<p>${esc(s.text)}</p>` : ''}
+          ${s.deal ? `<span class="slide__deal">${esc(s.deal)}</span>` : ''}
+        </div>
+        ${!s.photo && s.images?.length ? `<div class="slide__art">${s.images.slice(0, 3).map((im, k) => `<img class="a${k + 1}" src="${esc(im)}" alt="">`).join('')}</div>` : ''}
+      </a>`).join('');
+
+    $('[data-mini]').innerHTML = (STORE.miniBanners || []).slice(0, 3).map(b => `
+      <a class="mini-banner ${tone(b.color)}" href="${esc(b.link || '#')}"${ext(b.link)}>
+        <div><b>${esc(b.title)}</b><span>${esc(b.text)}</span></div>
+        ${b.img ? `<img src="${esc(b.img)}" alt="" class="${/emblem/.test(b.img) ? 'round' : ''}">` : ICON.truck}
+      </a>`).join('');
+  }
+
+  function renderMenus() {
     $('[data-menu-list]').innerHTML =
-      items.map(([k, c]) => `<a class="menu-link" href="#shop" data-filter="${k}"><img src="${c.img}" alt="">${c.name}</a>`).join('') +
+      STORE.categories.map(c => `<a class="menu-link" href="#shop" data-filter="${c.id}"><img src="${esc(c.img)}" alt="">${esc(c.name)}</a>`).join('') +
       `<a class="menu-link" href="#flash">Flash sale</a><a class="menu-link" href="#vouchers">Mã giảm giá</a><a class="menu-link" href="#blog">Cẩm nang</a><a class="menu-link" href="#contact">Liên hệ</a>`;
-    $('[data-quick-cats]').innerHTML = items.map(([k, c]) => `
-      <a class="qc" href="#shop" data-filter="${k}">
-        <span class="qc__img ${c.cover ? 'cover' : ''}" style="background:${c.bg}"><img src="${c.img}" alt="" loading="lazy"></span>
-        ${c.name}
+    const bgs = ['#fff1e6', '#f1ece6', '#fdeceb', '#f3eaf7', '#e9f3e6', '#fdeef4', '#eef0fb', '#fff4e0', '#e8f0ef'];
+    $('[data-quick-cats]').innerHTML = STORE.categories.map((c, i) => `
+      <a class="qc" href="#shop" data-filter="${c.id}">
+        <span class="qc__img" style="background:${bgs[i % bgs.length]}"><img src="${esc(c.img)}" alt="" loading="lazy"></span>
+        ${esc(c.name)}
       </a>`).join('') + `
-      <a class="qc" href="#shop" data-filter="sale">
-        <span class="qc__img" style="background:#ffe8ec;color:#e0234e"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
-        Đang giảm giá
-      </a>`;
-    $('[data-hot-keys]').innerHTML = HOT_KEYS.map(k => `<button type="button" data-key="${esc(k)}">${k}</button>`).join('');
+      <a class="qc" href="#shop" data-filter="sale"><span class="qc__img" style="background:#ffe8ec;color:#e0234e">${ICON.tag}</span>Đang giảm giá</a>`;
+    const n = STORE.categories.length + 1;
+    $('[data-quick-cats]').style.setProperty('--n', Math.min(n, 10));
   }
 
   function renderVouchers() {
+    $('#vouchers').hidden = !VOUCHERS.length;
     $('[data-vouchers]').innerHTML = VOUCHERS.map(v => `
       <div class="voucher">
-        <div class="voucher__left"><div><b>${v.big}</b>${v.small}</div></div>
+        <div class="voucher__left"><div><b>${esc(v.big)}</b>${esc(v.small)}</div></div>
         <div class="voucher__body">
-          <b>${v.title}</b>
-          <span>${v.note}</span>
+          <b>${esc(v.title)}</b>
+          <span>${esc(v.note)}</span>
           <div class="voucher__foot">
-            <span class="voucher__code">${v.code}</span>
-            <button class="copy-btn" data-copy="${v.code}">Lưu mã</button>
+            <span class="voucher__code">${esc(v.code)}</span>
+            <button class="copy-btn" data-copy="${esc(v.code)}">Lưu mã</button>
           </div>
         </div>
       </div>`).join('');
   }
 
   function renderFlash() {
-    $('[data-carousel="flash"]').innerHTML = PRODUCTS.filter(isSale).sort((a, b) => offPct(b) - offPct(a)).map(card).join('');
+    const list = PRODUCTS.filter(p => p.flash && isSale(p)).sort((a, b) => offPct(b) - offPct(a));
+    $('#flash').hidden = !list.length;
+    $('[data-carousel="flash"]').innerHTML = list.map(card).join('');
   }
 
-  function renderGinseng(filter = 'ginseng') {
-    $('[data-chips="ginseng"]').innerHTML = [['ginseng', 'Tất cả'], ['hong-sam', 'Hồng sâm'], ['hac-sam', 'Hắc sâm'], ['nuoc-sam', 'Nước & thạch'], ['combo', 'Combo']]
-      .map(([k, n]) => `<button class="chip ${k === filter ? 'is-active' : ''}" data-gchip="${k}">${n}</button>`).join('');
-    $('[data-grid="ginseng"]').innerHTML = PRODUCTS.filter(p => inGroup(p, filter)).slice(0, 8).map(card).join('');
+  function renderPromos() {
+    $('[data-promos]').innerHTML = (STORE.promos || []).map(p => `
+      <a href="${esc(p.link || '#')}" class="promo ${tone(p.color)}"${ext(p.link)}>
+        <div><small>${esc(p.label)}</small><b>${esc(p.title)}</b></div>
+        ${p.img ? `<img src="${esc(p.img)}" alt="">` : ''}
+      </a>`).join('');
   }
 
-  function renderSpotlight() {
-    const p = byId('bt1');
-    $('[data-spotlight]').innerHTML = `
-      <div class="spotlight__img"><img src="${IMG}matcha-lifestyle.jpg" alt="${esc(p.name)}" loading="lazy"></div>
-      <div class="spotlight__info">
-        <span class="pcard__brand">${p.brand} · Sản phẩm nổi bật</span>
-        <h3>${esc(p.name)}</h3>
-        <p>${esc(p.desc)}</p>
-        <div class="spotlight__thumbs">${p.gallery.slice(1).map(g => `<img src="${IMG + g}" alt="" loading="lazy">`).join('')}</div>
-        <div class="spotlight__price"><b>${money(p.price)}</b><s>${money(p.compare)}</s></div>
-        <div class="spotlight__actions">
-          <button class="btn" data-add="${p.id}">${ICON.cart} Thêm vào giỏ</button>
-          <button class="btn btn--ghost" data-view="${p.id}">Xem chi tiết</button>
+  function renderGroups() {
+    const spot = STORE.spotlight && byId(STORE.spotlight.productId);
+    $('[data-groups]').innerHTML = GROUPS.map((g, gi) => {
+      const items = PRODUCTS.filter(p => groupOf(p) === g.id);
+      if (!items.length) return '';
+      const cats = STORE.categories.filter(c => c.group === g.id);
+      const block = `
+      <section class="container cat-block" id="group-${g.id}">
+        <div class="cat-block__head">
+          <h2 class="sec-title">${esc(g.name)}</h2>
+          <div class="chips" data-chips="${g.id}">
+            <button class="chip is-active" data-gchip="${g.id}" data-group="${g.id}">Tất cả</button>
+            ${cats.map(c => `<button class="chip" data-gchip="${c.id}" data-group="${g.id}">${esc(c.name)}</button>`).join('')}
+          </div>
         </div>
-      </div>`;
+        <div class="cat-block__body">
+          <a class="tall-banner ${tone(g.color)}" href="#shop" data-filter="${g.id}">
+            <span class="tall-banner__tag">${esc(g.bannerTag)}</span>
+            <b>${esc(g.bannerTitle)}</b>
+            <span class="tall-banner__cta">Xem tất cả</span>
+            ${(g.bannerImages || []).slice(0, 2).map(im => `<img src="${esc(im)}" alt="">`).join('')}
+          </a>
+          <div class="grid grid--4" data-grid="${g.id}">${items.slice(0, 8).map(card).join('')}</div>
+        </div>
+        <div class="center"><a class="btn-outline" href="#shop" data-filter="${g.id}">Xem tất cả ${esc(g.name.toLowerCase())}</a></div>
+      </section>`;
+      return block + (gi === 0 && spot ? spotlightHtml(spot) : '');
+    }).join('');
+  }
+
+  function spotlightHtml(p) {
+    const sp = STORE.spotlight;
+    const thumbs = (p.gallery || []).filter(g => g !== sp.image).slice(0, 4);
+    return `
+      <section class="container cat-block">
+        <div class="spotlight">
+          <div class="spotlight__img"><img src="${esc(sp.image || p.img)}" alt="${esc(p.name)}" loading="lazy"></div>
+          <div class="spotlight__info">
+            <span class="pcard__brand">${esc(p.brand)} · ${esc(sp.label || 'Sản phẩm nổi bật')}</span>
+            <h3>${esc(p.name)}</h3>
+            <p>${esc(p.desc)}</p>
+            ${thumbs.length ? `<div class="spotlight__thumbs">${thumbs.map(g => `<img src="${esc(g)}" alt="" loading="lazy">`).join('')}</div>` : ''}
+            <div class="spotlight__price"><b>${money(p.price)}</b>${isSale(p) ? `<s>${money(p.compare)}</s>` : ''}</div>
+            <div class="spotlight__actions">
+              <button class="btn" data-add="${p.id}">${ICON.cart} Thêm vào giỏ</button>
+              <button class="btn btn--ghost" data-view="${p.id}">Xem chi tiết</button>
+            </div>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function renderPosts() {
+    $('#blog').hidden = !(STORE.posts || []).length;
+    $('[data-posts]').innerHTML = (STORE.posts || []).map(p => `
+      <a class="post" href="${esc(p.link || '#blog')}"${ext(p.link)}>
+        <div class="post__img"><img src="${esc(p.img)}" alt="" loading="lazy"></div>
+        <div class="post__body"><span class="post__tag">${esc(p.tag)}</span><h3>${esc(p.title)}</h3><time>${esc(p.date)}</time></div>
+      </a>`).join('');
   }
 
   function renderTabs() {
-    const items = [['all', 'Tất cả'], ['sale', 'Đang giảm giá'], ...Object.entries(CATS).map(([k, c]) => [k, c.name])];
+    const items = [['all', 'Tất cả'], ['sale', 'Đang giảm giá'], ...STORE.categories.map(c => [c.id, c.name])];
     $('[data-tabs]').innerHTML = items.map(([k, n]) =>
-      `<button class="tab ${state.filter === k ? 'is-active' : ''}" data-filter="${k}">${n}</button>`).join('');
+      `<button class="tab ${state.filter === k ? 'is-active' : ''}" data-filter="${k}">${esc(n)}</button>`).join('');
   }
 
   function renderShop() {
@@ -181,26 +247,23 @@
       'price-desc': (a, b) => b.price - a.price
     };
     const list = PRODUCTS
-      .filter(p => inGroup(p, state.filter))
-      .filter(p => !q || `${p.name} ${p.brand} ${CATS[p.cat].name}`.toLowerCase().includes(q))
+      .filter(p => inFilter(p, state.filter))
+      .filter(p => !q || `${p.name} ${p.brand} ${catName(p.cat)}`.toLowerCase().includes(q))
       .sort(sorters[state.sort]);
     $('[data-grid="shop"]').innerHTML = list.map(card).join('');
-
     const empty = $('[data-empty]');
     empty.hidden = list.length > 0;
-    const soon = CATS[state.filter]?.soon;
-    empty.innerHTML = soon && !q
-      ? `Mặt hàng ${CATS[state.filter].name.toLowerCase()} đang được cập nhật lên website. Trong lúc chờ, cả nhà xem hàng qua <a href="${FB}" target="_blank" rel="noopener">live trên Facebook</a> hoặc gọi <a href="tel:+18328632592">832-863-2592</a> nha.`
-      : `Không tìm thấy sản phẩm phù hợp. Gọi <a href="tel:+18328632592">832-863-2592</a> để Vân tìm giúp.`;
-    $('[data-shop-title]').textContent = q
-      ? `Kết quả cho "${state.q.trim()}"`
-      : state.filter === 'all' ? 'Gợi ý cho bạn' : state.filter === 'sale' ? 'Đang giảm giá' : state.filter === 'ginseng' ? 'Sâm Hàn Quốc' : (CATS[state.filter]?.name || 'Sản phẩm');
+    empty.innerHTML = `Chưa có sản phẩm phù hợp. Gọi <a href="tel:${esc(S.hotline)}">${esc(S.hotlineDisplay)}</a> hoặc xem <a href="${esc(S.facebook)}" target="_blank" rel="noopener">live trên Facebook</a> nha.`;
+    const g = GROUPS.find(x => x.id === state.filter);
+    $('[data-shop-title]').textContent = q ? `Kết quả cho "${state.q.trim()}"`
+      : state.filter === 'all' ? 'Gợi ý cho bạn'
+      : state.filter === 'sale' ? 'Đang giảm giá'
+      : g ? g.name : catName(state.filter) || 'Sản phẩm';
     renderTabs();
   }
 
   function setFilter(f) {
-    state.filter = f;
-    state.q = '';
+    state.filter = f; state.q = '';
     $('[data-search] input').value = '';
     renderShop();
   }
@@ -208,21 +271,17 @@
   /* ================= Giỏ hàng ================= */
   const count = () => cart.reduce((s, i) => s + i.qty, 0);
   const subtotal = () => cart.reduce((s, i) => s + byId(i.id).price * i.qty, 0);
-  const ginsengTotal = () => cart.reduce((s, i) => { const p = byId(i.id); return s + (CATS[p.cat].group === 'ginseng' ? p.price * i.qty : 0); }, 0);
 
   function pricing() {
     const sub = subtotal();
     let ship = sub >= FREESHIP || !cart.length ? 0 : SHIPPING;
     let discount = 0, couponOk = false;
     const v = coupon && VOUCHERS.find(x => x.code === coupon);
-    if (v) {
-      const base = v.type === 'percent' ? ginsengTotal() : sub;
-      if (base >= v.min) {
-        couponOk = true;
-        if (v.type === 'ship') ship = 0;
-        if (v.type === 'amount') discount = v.value;
-        if (v.type === 'percent') discount = Math.round(base * v.value) / 100;
-      }
+    if (v && sub >= +v.min) {
+      couponOk = true;
+      if (v.type === 'ship') ship = 0;
+      if (v.type === 'amount') discount = Math.min(+v.value, sub);
+      if (v.type === 'percent') discount = Math.round(sub * v.value) / 100;
     }
     return { sub, ship, discount, total: Math.max(0, sub - discount + ship), v, couponOk };
   }
@@ -235,12 +294,12 @@
     toast('Đã thêm vào giỏ hàng');
   }
 
-  function saveCart() { store.set('jaju-cart-v4', cart); store.set('jaju-coupon', coupon); renderCart(); }
+  function saveCart() { store.set('jaju-cart-v5', cart); store.set('jaju-coupon', coupon); renderCart(); }
 
   function totalsHtml(pr) {
     return `
       <div><span>Tạm tính</span><span>${money(pr.sub)}</span></div>
-      ${pr.discount ? `<div class="disc"><span>Mã ${pr.v.code}</span><span>-${money(pr.discount)}</span></div>` : ''}
+      ${pr.discount ? `<div class="disc"><span>Mã ${esc(pr.v.code)}</span><span>-${money(pr.discount)}</span></div>` : ''}
       <div><span>Phí vận chuyển</span><span>${pr.ship ? money(pr.ship) : 'Miễn phí'}</span></div>
       <div class="grand"><span>Tổng cộng</span><b>${money(pr.total)}</b></div>`;
   }
@@ -254,14 +313,14 @@
     $('[data-ship-note]').innerHTML = left > 0
       ? `Mua thêm <b>${money(left)}</b> để được miễn phí vận chuyển`
       : 'Đơn hàng của bạn được <b>miễn phí vận chuyển</b>';
-    $('[data-ship-bar]').style.width = Math.min(100, pr.sub / FREESHIP * 100) + '%';
+    $('[data-ship-bar]').style.width = Math.min(100, FREESHIP ? pr.sub / FREESHIP * 100 : 100) + '%';
     $('[data-totals]').innerHTML = totalsHtml(pr);
     $('[data-action="checkout"]').disabled = !cart.length;
 
     const msg = $('[data-coupon-msg]');
     if (pr.v) {
       msg.className = 'coupon-msg ' + (pr.couponOk ? 'ok' : 'err');
-      msg.textContent = pr.couponOk ? `Đã áp dụng mã ${pr.v.code}` : `Mã ${pr.v.code}: ${pr.v.note.toLowerCase()}`;
+      msg.textContent = pr.couponOk ? `Đã áp dụng mã ${pr.v.code}` : `Mã ${pr.v.code}: ${String(pr.v.note).toLowerCase()}`;
       $('[data-coupon-form] input').value = pr.v.code;
     }
 
@@ -270,10 +329,10 @@
       : cart.map((i, idx) => {
         const p = byId(i.id);
         return `<div class="line">
-          <img src="${p.src}" alt="">
+          <img src="${esc(p.img)}" alt="">
           <div>
             <h4>${esc(p.name)}</h4>
-            <small>${i.opt ? esc(i.opt) : esc(p.brand)}</small>
+            <small>${esc(i.opt || p.brand)}</small>
             <div class="line__row">
               <div><span class="qty"><button data-qty="${idx}" data-d="-1" aria-label="Giảm">-</button><span>${i.qty}</span><button data-qty="${idx}" data-d="1" aria-label="Tăng">+</button></span><button class="rm" data-remove="${idx}">Xóa</button></div>
               <b>${money(p.price * i.qty)}</b>
@@ -293,27 +352,27 @@
 
   function viewProduct(id) {
     const p = byId(id);
-    const gallery = (p.gallery || [p.img]).map(f => IMG + f);
+    const gallery = p.gallery?.length ? p.gallery : [p.img];
     const off = offPct(p);
     openModal(`
       <div class="pd">
         <div>
-          <div class="pd__main"><img src="${gallery[0]}" alt="${esc(p.name)}" data-pd-main></div>
-          ${gallery.length > 1 ? `<div class="pd__thumbs">${gallery.map((g, i) => `<button class="${i ? '' : 'is-active'}" data-thumb="${g}"><img src="${g}" alt=""></button>`).join('')}</div>` : ''}
+          <div class="pd__main"><img src="${esc(gallery[0])}" alt="${esc(p.name)}" data-pd-main></div>
+          ${gallery.length > 1 ? `<div class="pd__thumbs">${gallery.map((g, i) => `<button class="${i ? '' : 'is-active'}" data-thumb="${esc(g)}"><img src="${esc(g)}" alt=""></button>`).join('')}</div>` : ''}
         </div>
         <div class="pd__info">
-          <span class="pcard__brand">${esc(p.brand)} · ${CATS[p.cat].name}</span>
+          <span class="pcard__brand">${esc(p.brand)} · ${esc(catName(p.cat))}</span>
           <h3>${esc(p.name)}</h3>
           <div class="pd__price"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s><em>-${off}%</em>` : ''}</div>
           <p>${esc(p.desc)}</p>
-          ${p.opts ? `<span class="opt-label">Phân loại</span><div class="opts" data-opts>${p.opts.map((o, i) => `<button class="opt ${i ? '' : 'is-active'}" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}</div>` : ''}
+          ${p.opts?.length ? `<span class="opt-label">Phân loại</span><div class="opts" data-opts>${p.opts.map((o, i) => `<button class="opt ${i ? '' : 'is-active'}" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}</div>` : ''}
           <div class="pd__buy">
             <div class="qty"><button data-pdq="-1" aria-label="Giảm">-</button><span data-pd-qty>1</span><button data-pdq="1" aria-label="Tăng">+</button></div>
             <button class="btn" data-pd-add="${p.id}">${ICON.cart} Thêm vào giỏ</button>
           </div>
           <div class="pd__perks">
             <span>${ICON.shield}Hàng chính hãng</span>
-            <span>${ICON.truck}Freeship đơn từ $100</span>
+            <span>${ICON.truck}Freeship đơn từ ${money(FREESHIP)}</span>
             <span>${ICON.back}Đổi trả 7 ngày</span>
             <span>${ICON.gift}Gói quà miễn phí</span>
           </div>
@@ -333,15 +392,15 @@
             <div class="field"><label for="c-phone">Số điện thoại *</label><input id="c-phone" name="phone" type="tel" required autocomplete="tel"></div>
             <div class="field"><label for="c-addr">Địa chỉ nhận hàng *</label><textarea id="c-addr" name="address" rows="2" required autocomplete="street-address"></textarea></div>
             <div class="field"><label>Phương thức thanh toán</label>
-              <label class="pay-opt"><input type="radio" name="pay" value="Zelle" checked><span class="pay-logo zelle">Zelle</span>JaJu Boutique · 832-419-9799</label>
-              <label class="pay-opt"><input type="radio" name="pay" value="Venmo"><span class="pay-logo venmo">venmo</span>@Van-Than-1</label>
+              <label class="pay-opt"><input type="radio" name="pay" value="Zelle" checked><span class="pay-logo zelle">Zelle</span>${esc(S.zelleName)} · ${esc(S.zellePhone)}</label>
+              <label class="pay-opt"><input type="radio" name="pay" value="Venmo"><span class="pay-logo venmo">venmo</span>${esc(S.venmo)}</label>
               <label class="pay-opt"><input type="radio" name="pay" value="Pickup">Nhận hàng và trả tiền tại Houston</label>
             </div>
             <div class="field"><label for="c-note">Ghi chú</label><textarea id="c-note" name="note" rows="2" placeholder="Giờ nhận hàng, gói quà..."></textarea></div>
           </div>
           <div class="summary">
             <h4>Đơn hàng (${count()} sản phẩm)</h4>
-            ${cart.map(i => { const p = byId(i.id); return `<div class="sum-line"><img src="${p.src}" alt=""><span>${esc(p.name)}${i.opt ? ` (${esc(i.opt)})` : ''} x${i.qty}</span><b>${money(p.price * i.qty)}</b></div>`; }).join('')}
+            ${cart.map(i => { const p = byId(i.id); return `<div class="sum-line"><img src="${esc(p.img)}" alt=""><span>${esc(p.name)}${i.opt ? ` (${esc(i.opt)})` : ''} x${i.qty}</span><b>${money(p.price * i.qty)}</b></div>`; }).join('')}
             <div class="totals">${totalsHtml(pr)}</div>
             <button class="btn btn--block" type="submit">Đặt hàng</button>
           </div>
@@ -356,15 +415,13 @@
     // Bản demo: đơn chưa được gửi đi. Bản chính thức sẽ gửi về email hoặc Google Sheet của shop.
     cart = []; coupon = null; saveCart();
     $('[data-coupon-form] input').value = ''; $('[data-coupon-msg]').textContent = '';
-    const pay = d.pay === 'Zelle'
-      ? '<div class="pay-card"><span class="pay-logo zelle">Zelle</span><div>JaJu Boutique<br><b>832-419-9799</b></div></div>'
-      : d.pay === 'Venmo' ? '<div class="pay-card"><span class="pay-logo venmo">venmo</span><div><b>@Van-Than-1</b></div></div>' : '';
+    const pay = d.pay === 'Zelle' ? payCard('Zelle') : d.pay === 'Venmo' ? payCard('Venmo') : '';
     openModal(`
       <div class="success">
         <div class="success__icon">${ICON.check}</div>
         <h3>Đặt hàng thành công</h3>
         <p>Cảm ơn ${esc(d.name)}. Mã đơn <b>${code}</b>, tổng tiền <b>${money(total)}</b>.</p>
-        ${pay ? `<p>Vui lòng chuyển khoản và ghi mã đơn <b>${code}</b> trong nội dung:</p>${pay}` : '<p>Vân sẽ gọi để hẹn giờ nhận hàng tại Houston.</p>'}
+        ${pay ? `<p>Vui lòng chuyển khoản và ghi mã đơn <b>${code}</b> trong nội dung:</p>${pay}` : '<p>Shop sẽ gọi để hẹn giờ nhận hàng tại Houston.</p>'}
         <button class="btn" data-action="close-modal">Tiếp tục mua sắm</button>
       </div>`);
   }
@@ -377,23 +434,25 @@
   }
 
   /* ================= Slider, đếm ngược ================= */
-  const slider = (() => {
+  function initSlider() {
     const slides = $$('.slide'), dots = $('[data-dots]');
     let i = 0, timer;
+    if (!slides.length) return { next() {} };
     dots.innerHTML = slides.map((_, k) => `<button aria-label="Banner ${k + 1}" class="${k ? '' : 'is-active'}"></button>`).join('');
     const go = n => {
       slides[i].classList.remove('is-active'); dots.children[i].classList.remove('is-active');
       i = (n + slides.length) % slides.length;
       slides[i].classList.add('is-active'); dots.children[i].classList.add('is-active');
+      $('[data-slider]').className = 'slider ' + [...slides[i].classList].find(c => c.startsWith('tone-'));
       play();
     };
     const play = () => { clearInterval(timer); timer = setInterval(() => go(i + 1), 5000); };
     [...dots.children].forEach((b, k) => b.addEventListener('click', () => go(k)));
-    play();
+    go(0);
     return { next: d => go(i + d) };
-  })();
+  }
 
-  (function countdown() {
+  function initCountdown() {
     const el = $('[data-countdown]');
     const pad = n => String(n).padStart(2, '0');
     const tick = () => {
@@ -404,7 +463,21 @@
       $('[data-s]', el).textContent = pad(s % 60);
     };
     tick(); setInterval(tick, 1000);
-  })();
+  }
+
+  /* ================= Khởi chạy ================= */
+  applySettings();
+  renderHero();
+  renderMenus();
+  renderVouchers();
+  renderFlash();
+  renderPromos();
+  renderGroups();
+  renderPosts();
+  renderShop();
+  renderCart();
+  const slider = initSlider();
+  initCountdown();
 
   /* ================= Sự kiện ================= */
   document.addEventListener('click', e => {
@@ -413,10 +486,14 @@
     const d = t.dataset;
 
     if (d.filter) { setFilter(d.filter); closeSheets(); return; }
-    if (d.gchip) { renderGinseng(d.gchip); return; }
+    if (d.gchip) {
+      $$(`[data-chips="${d.group}"] .chip`).forEach(c => c.classList.toggle('is-active', c === t));
+      $(`[data-grid="${d.group}"]`).innerHTML = PRODUCTS.filter(p => inFilter(p, d.gchip)).slice(0, 8).map(card).join('');
+      return;
+    }
     if (d.add) { addToCart(d.add); return; }
     if (d.view) { viewProduct(d.view); return; }
-    if (d.slide) { slider.next(+d.slide); return; }
+    if (d.slide) { slider.next(+d.slide); e.preventDefault(); return; }
     if (d.scroll) { const c = $(`[data-carousel="${d.scroll}"]`); c.scrollBy({ left: c.clientWidth * +d.dir, behavior: 'smooth' }); return; }
     if (d.key) { $('[data-search] input').value = d.key; $('[data-search]').requestSubmit(); return; }
     if (d.copy) {
@@ -477,13 +554,4 @@
   $('[data-sort]').addEventListener('change', e => { state.sort = e.target.value; renderShop(); });
   const topBtn = $('.fa--top');
   addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 600), { passive: true });
-  $('[data-year]').textContent = new Date().getFullYear();
-
-  renderMenus();
-  renderVouchers();
-  renderFlash();
-  renderGinseng();
-  renderSpotlight();
-  renderShop();
-  renderCart();
 })();
