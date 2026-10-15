@@ -72,15 +72,16 @@
   ];
 
   const TONES = [['peach', 'Cam đào'], ['mint', 'Xanh mint'], ['pink', 'Hồng'], ['lavender', 'Tím lavender'], ['sky', 'Xanh trời'], ['cream', 'Kem']];
+  // primary: màu đậm (icon giỏ, dải footer) · accent: màu nhấn (nút, chip, ô tìm kiếm) · bg: nền trang
   const PRESETS = [
-    { name: 'Tím lavender', primary: '#7b3f9e', accent: '#ec5f93', bg: '#faf7fc' },
-    { name: 'Hồng phấn', primary: '#c2477c', accent: '#f39a3d', bg: '#fff8fa' },
-    { name: 'Xanh mint', primary: '#1f8a70', accent: '#f08a5d', bg: '#f6fbf9' },
-    { name: 'Đỏ son', primary: '#c2272d', accent: '#f2a900', bg: '#fffaf7' },
-    { name: 'Xanh navy', primary: '#27467d', accent: '#e85d75', bg: '#f7f9fc' },
-    { name: 'Tím than ánh vàng', primary: '#4b2a63', accent: '#d4a017', bg: '#fbf9f6' },
-    { name: 'Nâu cà phê', primary: '#7a4b2a', accent: '#e0795a', bg: '#fcf9f5' },
-    { name: 'Xanh ngọc', primary: '#0f7c8c', accent: '#f26b6b', bg: '#f5fbfc' }
+    { name: 'Hồng anh đào (mặc định)', primary: '#4b2a63', accent: '#e2589a', bg: '#f9ecf3' },
+    { name: 'Tím lavender', primary: '#3b2a63', accent: '#8a4fc7', bg: '#f5f0fb' },
+    { name: 'Hồng đào', primary: '#5a2a3a', accent: '#ee6f8a', bg: '#fff1f3' },
+    { name: 'Xanh mint', primary: '#1d4d3e', accent: '#22a07a', bg: '#eef8f4' },
+    { name: 'Đỏ son', primary: '#4a1c1c', accent: '#d7263d', bg: '#fdf1f1' },
+    { name: 'Xanh navy', primary: '#1f2f5c', accent: '#e85d75', bg: '#f1f4fa' },
+    { name: 'Cam san hô', primary: '#4a2c20', accent: '#f0743e', bg: '#fff4ee' },
+    { name: 'Xanh ngọc', primary: '#0f4a55', accent: '#14a3b8', bg: '#eef9fb' }
   ];
 
   /* ================= Lưu nháp, trạng thái ================= */
@@ -618,16 +619,16 @@
       <div class="card">
         <div class="card__head"><h2>Tự chọn màu</h2></div>
         <div class="form">
-          <div class="field"><label>Màu chủ đạo</label><div class="color-row"><input type="color" data-color="primary" value="${t.primary || '#7b3f9e'}"><span class="hint">Nút bấm, tiêu đề, menu</span></div></div>
-          <div class="field"><label>Màu nhấn</label><div class="color-row"><input type="color" data-color="accent" value="${t.accent || '#ec5f93'}"><span class="hint">Nhãn, giỏ hàng, Flash Sale</span></div></div>
-          <div class="field"><label>Màu nền trang</label><div class="color-row"><input type="color" data-color="bg" value="${t.bg || '#faf7fc'}"><span class="hint">Nên chọn màu rất nhạt</span></div></div>
+          <div class="field"><label>Màu nhấn</label><div class="color-row"><input type="color" data-color="accent" value="${t.accent || '#e2589a'}"><span class="hint">Nút bấm, ô tìm kiếm, chip danh mục</span></div></div>
+          <div class="field"><label>Màu đậm</label><div class="color-row"><input type="color" data-color="primary" value="${t.primary || '#4b2a63'}"><span class="hint">Icon giỏ hàng, dải chân trang</span></div></div>
+          <div class="field"><label>Màu nền trang</label><div class="color-row"><input type="color" data-color="bg" value="${t.bg || '#f9ecf3'}"><span class="hint">Nên chọn màu rất nhạt</span></div></div>
         </div>
         <div class="theme-demo" style="margin-top:16px;background:${t.bg}">
-          <div class="theme-demo__strip" style="background:${t.primary}22;color:${t.primary}">Xem thử màu</div>
+          <div class="theme-demo__strip" style="background:${t.primary};color:#fff">Xem thử màu</div>
           <div class="theme-demo__body">
-            <span class="theme-demo__btn" style="background:${t.primary}">Thêm vào giỏ</span>
-            <span class="theme-demo__tag" style="background:${t.accent}">-20%</span>
-            <b style="color:${t.primary};font-size:18px">Tiêu đề khu sản phẩm</b>
+            <span class="theme-demo__btn" style="background:${t.accent}">Mua ngay</span>
+            <span class="theme-demo__tag" style="background:${t.primary}">Thêm vào giỏ</span>
+            <b style="color:${t.accent};font-size:18px">FLASH SALE</b>
           </div>
         </div>
       </div>`;

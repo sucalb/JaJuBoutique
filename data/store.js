@@ -23,9 +23,9 @@ window.JAJU_STORE = {
     "footerNote": "Thực phẩm này không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.",
     "followers": "7.000",
     "theme": {
-      "primary": "#7b3f9e",
-      "accent": "#ec5f93",
-      "bg": "#faf7fc"
+      "primary": "#4b2a63",
+      "accent": "#e2589a",
+      "bg": "#f9ecf3"
     },
     "adminHash": "5b946434b9c87aeb1e1d9dfc4a357b05891a98b0957ef4033e4e25056fcc7269"
   },

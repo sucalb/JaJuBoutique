@@ -9,14 +9,10 @@
   const PREVIEW = new URLSearchParams(location.search).has('preview');
   const readJSON = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
   const RAW = (PREVIEW && readJSON('jaju-admin-draft')) || window.JAJU_STORE;
-  document.body.classList.remove('is-loading');
   if (!RAW) { document.querySelector('#main').innerHTML = '<p style="padding:40px;text-align:center">Không tải được dữ liệu cửa hàng. Vui lòng tải lại trang.</p>'; return; }
 
   // Chuẩn hóa dữ liệu để trang không lỗi khi thiếu trường
-  const STORE = {
-    settings: {}, groups: [], categories: [], products: [], vouchers: [], slides: [],
-    miniBanners: [], promos: [], posts: [], spotlight: null, ...RAW
-  };
+  const STORE = { settings: {}, groups: [], categories: [], products: [], vouchers: [], slides: [], miniBanners: [], promos: [], posts: [], spotlight: null, ...RAW };
   const S = STORE.settings;
   const FREESHIP = +S.freeship || 0;
   const SHIPPING = +S.shippingFee || 0;
@@ -26,9 +22,7 @@
     .map((p, i) => ({ ...p, price: +p.price || 0, compare: +p.compare || 0, opts: p.opts || [], gallery: p.gallery || [], order: i }));
   const GROUPS = STORE.groups;
   const VOUCHERS = STORE.vouchers.filter(v => v && v.code);
-
-  // Giỏ hàng xem trước tách riêng, không đụng giỏ hàng thật của khách
-  const KEY = PREVIEW ? { cart: 'jaju-preview-cart', coupon: 'jaju-preview-coupon', fav: 'jaju-preview-fav' } : { cart: 'jaju-cart-v6', coupon: 'jaju-coupon-v6', fav: 'jaju-fav' };
+  const KEY = PREVIEW ? { cart: 'jaju-preview-cart', coupon: 'jaju-preview-coupon' } : { cart: 'jaju-cart-v6', coupon: 'jaju-coupon-v6' };
 
   /* ================= Tiện ích ================= */
   const $ = (s, el = document) => el.querySelector(s);
@@ -39,27 +33,26 @@
   const offPct = p => isSale(p) ? Math.round((1 - p.price / p.compare) * 100) : 0;
   const catName = id => CATS[id]?.name || '';
   const groupOf = p => CATS[p.cat]?.group;
-  const inFilter = (p, f) => f === 'all' || p.cat === f || groupOf(p) === f || (f === 'sale' && isSale(p)) || (f === 'fav' && favs.has(p.id));
+  const inFilter = (p, f) => f === 'all' || p.cat === f || groupOf(p) === f || (f === 'sale' && isSale(p));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const safeUrl = u => { u = String(u || '').trim(); return /^(https?:|mailto:|tel:|#|\/|\.{0,2}\/?[\w-])/i.test(u) && !/^\s*javascript:/i.test(u) ? u : '#'; };
+  const safeUrl = u => { u = String(u || '').trim(); return /^\s*(javascript|data|vbscript):/i.test(u) ? '#' : (u || '#'); };
   const ext = u => /^https?:/i.test(u || '') ? ' target="_blank" rel="noopener"' : '';
-  const tone = c => 'tone-' + (/^(peach|mint|pink|lavender|sky|cream)$/.test(c) ? c : 'lavender');
+  const tone = c => 'tone-' + (/^(peach|mint|pink|lavender|sky|cream)$/.test(c) ? c : 'pink');
   const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+  const tel = () => 'tel:' + String(S.hotline || '').replace(/[^\d+]/g, '');
   const store = {
     get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* bỏ qua */ } }
   };
   const I = {
     bag: '<svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
-    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
-    heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>',
-    arrow: '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    chev: '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
     check: '<svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',
     shield: '<svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>',
     truck: '<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
     back: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg>',
     gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10 3 7.5 4.5 9 8 12 8Zm0 0s2-5 4.5-3.5S15 8 12 8Z"/></svg>',
-    tag: '<svg viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>',
+    fire: '<svg viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9Z"/></svg>',
     msg: '<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4Z"/></svg>',
     mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
     copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>'
@@ -67,44 +60,27 @@
 
   let cart = store.get(KEY.cart, []).filter(i => i && byId(i.id) && i.qty > 0);
   let coupon = store.get(KEY.coupon, null);
-  const favs = new Set(store.get(KEY.fav, []).filter(byId));
   const state = { filter: 'all', sort: 'featured' };
 
   /* ================= Màu và thông tin chung ================= */
   const hexRgb = h => { const m = String(h).replace('#', '').match(/^([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i); return m ? m.slice(1).map(x => parseInt(x, 16)) : null; };
   const rgbHex = r => '#' + r.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
-  const mix = (h, w) => { const r = hexRgb(h); return r ? rgbHex(r.map(v => v + (255 - v) * w)) : h; };
-  const shade = (h, k) => { const r = hexRgb(h); return r ? rgbHex(r.map(v => v * (1 + k))) : h; };
+  const mix = (h, w) => rgbHex(hexRgb(h).map(v => v + (255 - v) * w));
+  const shade = (h, k) => rgbHex(hexRgb(h).map(v => v * (1 + k)));
 
   function applySettings() {
     const t = S.theme || {}, root = document.documentElement.style;
-    if (hexRgb(t.primary)) { root.setProperty('--c', t.primary); root.setProperty('--c-700', shade(t.primary, -.22)); root.setProperty('--c-50', mix(t.primary, .93)); root.setProperty('--c-100', mix(t.primary, .84)); root.setProperty('--soft', mix(t.primary, .955)); }
-    if (hexRgb(t.accent)) { root.setProperty('--a', t.accent); root.setProperty('--a-50', mix(t.accent, .93)); }
+    if (hexRgb(t.accent)) { root.setProperty('--pink', t.accent); root.setProperty('--pink-600', shade(t.accent, -.13)); root.setProperty('--pink-50', mix(t.accent, .92)); root.setProperty('--pink-100', mix(t.accent, .78)); }
+    if (hexRgb(t.primary)) { root.setProperty('--dark', t.primary); root.setProperty('--dark-600', shade(t.primary, -.2)); }
     if (hexRgb(t.bg)) root.setProperty('--bg', t.bg);
-    $('meta[name="theme-color"]').content = hexRgb(t.primary) ? t.primary : '#7b3f9e';
+    $('meta[name="theme-color"]').content = hexRgb(t.accent) ? t.accent : '#e2589a';
 
     $$('[data-text]').forEach(el => { el.textContent = S[el.dataset.text] ?? ''; });
-    const links = { tel: 'tel:' + String(S.hotline || '').replace(/[^\d+]/g, ''), email: 'mailto:' + (S.email || ''), facebook: safeUrl(S.facebook) };
+    const links = { tel: tel(), email: 'mailto:' + (S.email || ''), facebook: safeUrl(S.facebook) };
     $$('[data-link]').forEach(el => { el.href = links[el.dataset.link] || '#'; });
     $('[data-pay-cards]').innerHTML = payCard('zelle') + payCard('venmo');
     $('[data-year]').textContent = new Date().getFullYear();
     if (PREVIEW) $('[data-preview-bar]').hidden = false;
-
-    // Thông báo chạy
-    const msgs = [S.promoText, 'Hàng chính hãng Nhật, Hàn', `Hotline ${S.hotlineDisplay || ''}`].filter(Boolean);
-    const box = $('[data-announce]');
-    box.innerHTML = msgs.map((m, i) => `<span class="${i ? '' : 'on'}">${esc(m).replace(/(\$\d+)/, '<b>$1</b>')}</span>`).join('');
-    if (msgs.length > 1) {
-      let k = 0;
-      setInterval(() => {
-        const items = box.children;
-        items[k].className = 'off';
-        k = (k + 1) % items.length;
-        items[k].className = '';
-        void items[k].offsetWidth;
-        items[k].className = 'on';
-      }, 4000);
-    }
   }
 
   function payCard(type) {
@@ -113,145 +89,140 @@
       : `<div class="pay"><span class="pay__logo venmo">venmo</span><div><b>${esc(S.venmo)}</b></div></div>`;
   }
 
+  // Cánh hoa rơi nhẹ (tắt khi người dùng chọn giảm chuyển động)
+  function initPetals() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const box = $('.petals'), n = innerWidth < 700 ? 8 : 16;
+    box.innerHTML = Array.from({ length: n }, () => {
+      const left = Math.random() * 100, dur = 9 + Math.random() * 10, delay = -Math.random() * 18, size = .6 + Math.random() * .7, dx = (Math.random() * 160 - 40) | 0;
+      return `<i style="left:${left}%;animation-duration:${dur}s;animation-delay:${delay}s;transform:scale(${size});--dx:${dx}px"></i>`;
+    }).join('');
+  }
+
   /* ================= Thẻ sản phẩm ================= */
   function card(p) {
     const off = offPct(p);
     const demo = /minh họa/i.test(p.brand || '');
     return `
-      <article class="pc">
-        <div class="pc__media">
-          <button class="pc__open" data-view="${p.id}" aria-label="Xem ${esc(p.name)}" style="position:absolute;inset:0;z-index:1"></button>
+      <div class="pc">
+        <button class="pc__img" data-view="${p.id}" aria-label="Xem ${esc(p.name)}">
           <img src="${esc(p.img)}" alt="" loading="lazy" decoding="async">
-          <div class="pc__badges">
-            ${off ? `<span class="badge badge--sale">-${off}%</span>` : ''}
-            ${p.tag ? `<span class="badge">${esc(p.tag)}</span>` : ''}
-          </div>
-          <button class="pc__fav ${favs.has(p.id) ? 'on' : ''}" data-fav="${p.id}" aria-label="Yêu thích" aria-pressed="${favs.has(p.id)}">${I.heart}</button>
-          <button class="pc__quick" data-add="${p.id}">${p.opts.length ? 'Chọn phân loại' : `${I.bag} Thêm vào giỏ`}</button>
-        </div>
-        <div class="pc__info">
+          ${off ? `<span class="pc__off">-${off}%</span>` : ''}
+          ${p.tag ? `<span class="pc__tag">${esc(p.tag)}</span>` : ''}
+        </button>
+        <div class="pc__body">
           <span class="pc__brand ${demo ? 'demo' : ''}">${esc(p.brand || catName(p.cat))}</span>
-          <h3 class="pc__name" data-view="${p.id}">${esc(p.name)}</h3>
-          <div class="pc__price ${off ? 'sale' : ''}"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s>` : ''}
-            <button class="pc__add" data-add="${p.id}" aria-label="Thêm ${esc(p.name)} vào giỏ">${I.plus}</button>
-          </div>
+          <button class="pc__name" data-view="${p.id}">${esc(p.name)}</button>
+          <div class="pc__price"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s>` : ''}</div>
+          <button class="pc__add" data-add="${p.id}"><i>${I.bag}</i>${p.opts.length ? 'Chọn phân loại' : 'Thêm vào giỏ'}</button>
         </div>
-      </article>`;
+      </div>`;
   }
 
-  /* ================= Header: menu, tìm kiếm ================= */
-  function renderNav() {
-    $('[data-group-links]').innerHTML = GROUPS.filter(g => PRODUCTS.some(p => groupOf(p) === g.id))
-      .map(g => `<a class="hdr__link" href="#group-${esc(g.id)}">${esc(g.name.split(/\s[&,]\s|,/)[0])}</a>`).join('');
-
-    const countIn = id => PRODUCTS.filter(p => p.cat === id).length;
-    $('[data-mega]').innerHTML = GROUPS.map(g => {
-      const cats = STORE.categories.filter(c => c.group === g.id);
-      if (!cats.length) return '';
-      return `<div><h4>${esc(g.name)}</h4>${cats.map(c => `
-        <a href="#shop" data-filter="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy"><span>${esc(c.name)}<small>${countIn(c.id)} sản phẩm</small></span></a>`).join('')}</div>`;
-    }).join('');
+  /* ================= Menu ================= */
+  function renderMenus() {
+    $('[data-sidemenu]').innerHTML =
+      `<a href="#flash" class="hot"><span>Deal hot hôm nay</span>${I.chev}</a>` +
+      STORE.categories.map(c => `<a href="#shop" data-filter="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy"><span>${esc(c.name)}</span>${I.chev}</a>`).join('') +
+      `<a href="#blog"><span>Cẩm nang</span>${I.chev}</a>`;
 
     $('[data-menu-list]').innerHTML = GROUPS.map(g => {
       const cats = STORE.categories.filter(c => c.group === g.id);
       if (!cats.length) return '';
-      return `<div class="menu-group"><h3>${esc(g.name)}</h3>${cats.map(c => `<a class="menu-link" href="#shop" data-filter="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy">${esc(c.name)}</a>`).join('')}</div>`;
-    }).join('') + `
-      <div class="menu-extra">
-        <a href="#flash">Flash sale</a><a href="#vouchers">Mã giảm giá</a><a href="#blog">Cẩm nang</a><a href="#contact">Liên hệ</a>
-        <a href="tel:${esc(String(S.hotline || '').replace(/[^\d+]/g, ''))}">Gọi ${esc(S.hotlineDisplay)}</a>
-      </div>`;
+      return `<div class="mgroup"><h3>${esc(g.name)}</h3>${cats.map(c => `<a class="mlink" href="#shop" data-filter="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy">${esc(c.name)}</a>`).join('')}</div>`;
+    }).join('') + `<div class="mextra"><a href="#flash">Flash sale</a><a href="#vouchers">Mã giảm giá</a><a href="#blog">Cẩm nang</a><a href="#contact">Liên hệ</a><a href="${esc(tel())}">Gọi ${esc(S.hotlineDisplay)}</a></div>`;
 
-    $('[data-footer-cats]').innerHTML = STORE.categories.slice(0, 7).map(c => `<a href="#shop" data-filter="${esc(c.id)}">${esc(c.name)}</a>`).join('');
-    $('[data-hot-keys]').innerHTML = (S.hotKeys || []).length ? `<span>Tìm nhiều:</span>${S.hotKeys.map(k => `<button type="button" data-key="${esc(k)}">${esc(k)}</button>`).join('')}` : '';
+    $('[data-footer-cats]').innerHTML = STORE.categories.slice(0, 8).map(c => `<li><a href="#shop" data-filter="${esc(c.id)}">${esc(c.name)}</a></li>`).join('');
   }
 
-  function searchResults(q) {
-    const box = $('[data-search-results]');
-    const n = norm(q).trim();
-    if (!n) { box.innerHTML = ''; return; }
+  /* ================= Tìm kiếm (gợi ý ngay dưới ô tìm) ================= */
+  const drop = $('[data-search-drop]'), sInput = $('[data-search] input');
+  function renderSearch() {
+    const q = sInput.value, n = norm(q).trim();
+    if (!n) {
+      const keys = S.hotKeys || [];
+      drop.innerHTML = keys.length ? `<h4>Tìm kiếm phổ biến</h4><div class="keys">${keys.map(k => `<button type="button" data-key="${esc(k)}">${esc(k)}</button>`).join('')}</div>` : '';
+      drop.hidden = !keys.length;
+      return;
+    }
     const words = n.split(/\s+/);
     const list = PRODUCTS.filter(p => { const t = norm(`${p.name} ${p.brand} ${catName(p.cat)}`); return words.every(w => t.includes(w)); });
-    box.innerHTML = list.length
-      ? list.slice(0, 8).map(p => `<button class="result" data-view="${p.id}"><img src="${esc(p.img)}" alt=""><div><b>${esc(p.name)}</b><span>${money(p.price)}</span></div></button>`).join('') +
-        (list.length > 8 ? `<button class="btn btn--ghost results__all" data-search-all>Xem tất cả ${list.length} kết quả</button>` : '')
-      : `<p class="results__empty">Chưa tìm thấy "${esc(q)}". Thử từ khóa khác hoặc gọi ${esc(S.hotlineDisplay)} để hỏi Vân.</p>`;
+    drop.innerHTML = list.length
+      ? `<h4>Sản phẩm gợi ý</h4>` + list.slice(0, 6).map(p => `<button class="sres" data-view="${p.id}"><img src="${esc(p.img)}" alt=""><div><b>${esc(p.name)}</b><span>${money(p.price)}</span></div></button>`).join('') +
+        `<button class="sres__all" data-search-all>Xem tất cả ${list.length} kết quả</button>`
+      : `<p class="sres__none">Không tìm thấy "${esc(q)}". Gọi ${esc(S.hotlineDisplay)} để Vân tìm giúp.</p>`;
+    drop.hidden = false;
   }
+  function closeDrop() { drop.hidden = true; }
 
   /* ================= Hero ================= */
   function renderHero() {
     const slides = STORE.slides.filter(s => s && (s.title || s.photo || s.images?.length));
     $('[data-slides]').innerHTML = slides.map((s, i) => {
-      const link = safeUrl(s.link || '#shop');
-      const H = i ? 'h2' : 'h1';
+      const link = safeUrl(s.link || '#shop'), H = i ? 'h2' : 'h1';
       return `
-      <a class="slide ${tone(s.color)} ${i ? '' : 'is-active'}" href="${esc(link)}"${ext(link)} aria-hidden="${i ? 'true' : 'false'}" ${i ? 'tabindex="-1"' : ''}>
+      <a class="slide ${tone(s.color)} ${i ? '' : 'is-active'}" href="${esc(link)}"${ext(link)} aria-hidden="${!!i}" ${i ? 'tabindex="-1"' : ''}>
         ${s.photo ? `<img class="slide__photo" src="${esc(s.photo)}" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}>` : ''}
         <div class="slide__copy">
           ${s.eyebrow ? `<span class="slide__eyebrow">${esc(s.eyebrow)}</span>` : ''}
           <${H}>${esc(s.title)}${s.subtitle ? `<span>${esc(s.subtitle)}</span>` : ''}</${H}>
           ${s.text ? `<p>${esc(s.text)}</p>` : ''}
-          <span class="slide__cta">${esc(s.deal || 'Mua ngay')} <i>${I.arrow}</i></span>
+          ${s.deal ? `<span class="slide__deal">${esc(s.deal)}</span>` : ''}
         </div>
         ${!s.photo && s.images?.length ? `<div class="slide__art">${s.images.slice(0, 3).map((im, k) => `<img class="a${k + 1}" src="${esc(im)}" alt="" ${i ? 'loading="lazy"' : ''}>`).join('')}</div>` : ''}
       </a>`;
     }).join('');
     $('[data-slider]').hidden = !slides.length;
 
-    $('[data-tiles]').innerHTML = STORE.miniBanners.slice(0, 3).map(b => {
+    $('[data-sidebanners]').innerHTML = STORE.miniBanners.slice(0, 3).map(b => {
       const link = safeUrl(b.link || '#shop');
-      return `<a class="tile ${tone(b.color)}" href="${esc(link)}"${ext(link)}>
-        ${b.img ? `<img src="${esc(b.img)}" alt="" loading="lazy" class="${/emblem/.test(b.img) ? 'round' : ''}">` : I.truck}
+      return `<a class="sb ${tone(b.color)}" href="${esc(link)}"${ext(link)}>
         <b>${esc(b.title)}</b><span>${esc(b.text)}</span>
+        ${b.img ? `<img src="${esc(b.img)}" alt="" loading="lazy" class="${/emblem/.test(b.img) ? 'round' : ''}">` : I.truck}
       </a>`;
     }).join('');
-    $('[data-tiles]').hidden = !STORE.miniBanners.length;
   }
 
   function initSlider() {
     const slider = $('[data-slider]'), slides = $$('.slide', slider), dots = $('[data-dots]');
-    const DUR = 6000;
     let i = 0, timer = null, paused = false;
-    if (slides.length < 2) { $('.slider__ui', slider).hidden = true; return { next() {} }; }
-    slider.style.setProperty('--dur', DUR + 'ms');
-    dots.innerHTML = slides.map((_, k) => `<button aria-label="Banner ${k + 1}" class="${k ? '' : 'is-active'}"><i></i></button>`).join('');
+    if (slides.length < 2) { $$('.slider__arrow', slider).forEach(b => { b.hidden = true; }); return { next() {} }; }
+    dots.innerHTML = slides.map((_, k) => `<button aria-label="Banner ${k + 1}" class="${k ? '' : 'is-active'}"></button>`).join('');
     const go = n => {
       slides[i].classList.remove('is-active'); slides[i].setAttribute('aria-hidden', 'true'); slides[i].tabIndex = -1;
       dots.children[i].classList.remove('is-active');
       i = (n + slides.length) % slides.length;
       slides[i].classList.add('is-active'); slides[i].setAttribute('aria-hidden', 'false'); slides[i].removeAttribute('tabindex');
-      const d = dots.children[i]; d.classList.remove('is-active'); void d.offsetWidth; d.classList.add('is-active');
+      dots.children[i].classList.add('is-active');
       play();
     };
-    const play = () => { clearTimeout(timer); if (!paused) timer = setTimeout(() => go(i + 1), DUR); };
+    const play = () => { clearTimeout(timer); if (!paused && !document.hidden) timer = setTimeout(() => go(i + 1), 5000); };
     [...dots.children].forEach((b, k) => b.addEventListener('click', () => go(k)));
-    slider.addEventListener('mouseenter', () => { paused = true; clearTimeout(timer); dots.children[i].firstChild.style.animationPlayState = 'paused'; });
-    slider.addEventListener('mouseleave', () => { paused = false; dots.children[i].firstChild.style.animationPlayState = ''; play(); });
-    // vuốt trên điện thoại
+    slider.addEventListener('mouseenter', () => { paused = true; clearTimeout(timer); });
+    slider.addEventListener('mouseleave', () => { paused = false; play(); });
     let x0 = null;
     slider.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
     slider.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1)); x0 = null; });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(timer); else play(); });
+    document.addEventListener('visibilitychange', play);
     play();
     return { next: d => go(i + d) };
   }
 
   /* ================= Các khu vực ================= */
-  function renderCats() {
-    const box = $('[data-cats]');
-    box.innerHTML = STORE.categories.map(c => `
-      <a class="cat" href="#shop" data-filter="${esc(c.id)}"><span class="cat__img"><img src="${esc(c.img)}" alt="" loading="lazy"></span>${esc(c.name)}</a>`).join('') +
-      `<a class="cat" href="#shop" data-filter="sale"><span class="cat__img cat__img--sale">${I.tag}</span>Đang giảm giá</a>`;
-    box.style.setProperty('--n', Math.min(STORE.categories.length + 1, 10));
-  }
-
   function renderVouchers() {
     $('#vouchers').hidden = !VOUCHERS.length;
     $('[data-vouchers]').innerHTML = VOUCHERS.map(v => `
-      <div class="voucher">
-        <div class="voucher__big">${esc(v.big || v.code)}<small>${esc(v.small || '')}</small></div>
-        <div class="voucher__body"><b>${esc(v.title)}</b><span>${esc(v.note)}</span><code>${esc(v.code)}</code></div>
-        <button class="save-btn ${coupon === v.code ? 'done' : ''}" data-copy="${esc(v.code)}">${coupon === v.code ? 'Đã lưu' : 'Lưu mã'}</button>
+      <div class="vc">
+        <div class="vc__tag"><div><small>${esc(v.small || '')}</small>${esc(v.big || '')}</div></div>
+        <div class="vc__body">
+          <b>${esc(v.title)}</b>
+          <span>${esc(v.note)}</span>
+          <small>Mã: <em>${esc(v.code)}</em></small>
+        </div>
+        <div class="vc__side">
+          <i class="vc__info" title="${esc(v.note)}">i</i>
+          <button class="copy ${coupon === v.code ? 'done' : ''}" data-copy="${esc(v.code)}">${coupon === v.code ? 'Đã lưu' : 'Sao chép mã'}</button>
+        </div>
       </div>`).join('');
   }
 
@@ -263,14 +234,11 @@
 
   function renderPromos() {
     const list = STORE.promos.filter(p => p && p.title);
-    $('[data-promos]').closest('section').hidden = !list.length;
-    $('[data-promos]').innerHTML = list.map(p => {
+    const box = $('[data-promos]');
+    box.hidden = !list.length;
+    box.innerHTML = list.map(p => {
       const link = safeUrl(p.link || '#shop');
-      return `<a href="${esc(link)}" class="coll ${tone(p.color)}"${ext(link)}>
-        <small>${esc(p.label)}</small>
-        <div><b>${esc(p.title)}</b><span class="go">Khám phá ${I.arrow}</span></div>
-        ${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}
-      </a>`;
+      return `<a href="${esc(link)}" class="promo ${tone(p.color)}"${ext(link)}><small>${esc(p.label)}</small><b>${esc(p.title)}</b>${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}</a>`;
     }).join('');
   }
 
@@ -282,23 +250,26 @@
       if (!items.length) return '';
       const cats = STORE.categories.filter(c => c.group === g.id && items.some(p => p.cat === c.id));
       let html = `
-      <section class="wrap sec reveal" id="group-${esc(g.id)}">
-        <div class="sec__head">
-          <h2>${esc(g.name)}</h2>
-          <div class="rail-nav only-d"><button data-scroll="g-${esc(g.id)}" data-dir="-1" aria-label="Trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button data-scroll="g-${esc(g.id)}" data-dir="1" aria-label="Sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
-          ${cats.length > 1 ? `<div class="chips" style="flex-basis:100%;order:4" data-chips="${esc(g.id)}">
-            <button class="chip is-active" data-gchip="${esc(g.id)}" data-group="${esc(g.id)}">Tất cả</button>
-            ${cats.map(c => `<button class="chip" data-gchip="${esc(c.id)}" data-group="${esc(g.id)}">${esc(c.name)}</button>`).join('')}
-          </div>` : ''}
-        </div>
-        <div class="group">
-          <a class="group__banner ${tone(g.color)}" href="#shop" data-filter="${esc(g.id)}">
-            ${g.bannerTag ? `<small>${esc(g.bannerTag)}</small>` : ''}
-            <b>${esc(g.bannerTitle || g.name)}</b>
-            <span class="go">Xem tất cả <i>${I.arrow}</i></span>
-            ${(g.bannerImages || []).slice(0, 2).map(im => `<img src="${esc(im)}" alt="" loading="lazy">`).join('')}
-          </a>
-          <div class="rail group__rail" data-rail="g-${esc(g.id)}">${items.slice(0, 12).map(card).join('')}</div>
+      <section class="wrap blk" id="group-${esc(g.id)}">
+        <div class="panel">
+          <div class="cathead">
+            <h2 class="ttl ttl--lg">${esc(g.name)}</h2>
+            ${cats.length > 1 ? `<div class="chips" data-chips="${esc(g.id)}">
+              <button class="chip is-active" data-gchip="${esc(g.id)}" data-group="${esc(g.id)}">Tất cả</button>
+              ${cats.map(c => `<button class="chip" data-gchip="${esc(c.id)}" data-group="${esc(g.id)}">${esc(c.name)}</button>`).join('')}
+            </div>` : ''}
+          </div>
+          <div class="catbody">
+            <a class="vbanner ${tone(g.color)}" href="#shop" data-filter="${esc(g.id)}">
+              <img class="lg" src="assets/img/logo.png" alt="">
+              ${g.bannerTag ? `<small>${esc(g.bannerTag)}</small>` : ''}
+              <b>${esc(g.bannerTitle || g.name)}</b>
+              <span class="go">Xem tất cả</span>
+              <span class="pics">${(g.bannerImages || []).slice(0, 2).map(im => `<img src="${esc(im)}" alt="" loading="lazy">`).join('')}</span>
+            </a>
+            <div class="grid" data-grid="g-${esc(g.id)}">${items.slice(0, 10).map(card).join('')}</div>
+          </div>
+          <div class="seeall"><a class="btn btn--line" href="#shop" data-filter="${esc(g.id)}">Xem tất cả ${esc(g.name.toLowerCase())}</a></div>
         </div>
       </section>`;
       if (!spotDone) { html += spotlightHtml(spot); spotDone = true; }
@@ -311,7 +282,7 @@
     const img = sp.image || p.img;
     const thumbs = [...new Set(p.gallery.filter(g => g && g !== img))].slice(0, 4);
     return `
-      <section class="wrap sec reveal" aria-label="Sản phẩm nổi bật">
+      <section class="wrap blk" aria-label="Sản phẩm nổi bật">
         <div class="spot">
           <div class="spot__img"><img src="${esc(img)}" alt="${esc(p.name)}" loading="lazy"></div>
           <div class="spot__info">
@@ -320,9 +291,9 @@
             <p>${esc(p.desc)}</p>
             ${thumbs.length ? `<div class="spot__thumbs">${thumbs.map(g => `<button data-view="${p.id}" aria-label="Xem ảnh"><img src="${esc(g)}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
             <div class="spot__price"><b>${money(p.price)}</b>${isSale(p) ? `<s>${money(p.compare)}</s>` : ''}</div>
-            <div class="spot__actions">
+            <div class="spot__acts">
               <button class="btn" data-add="${p.id}">${I.bag} Thêm vào giỏ</button>
-              <button class="btn btn--ghost" data-view="${p.id}">Xem chi tiết</button>
+              <button class="btn btn--line" data-view="${p.id}">Xem chi tiết</button>
             </div>
           </div>
         </div>
@@ -332,24 +303,26 @@
   function renderPosts() {
     const list = STORE.posts.filter(p => p && p.title);
     $('#blog').hidden = !list.length;
-    $('[data-posts]').innerHTML = list.map(p => {
-      const link = safeUrl(p.link || '#blog');
-      return `<a class="post" href="${esc(link)}"${ext(link)}>
-        <div class="post__img"><img src="${esc(p.img)}" alt="" loading="lazy"></div>
-        <small>${esc(p.tag)}<time>${esc(p.date)}</time></small>
-        <h3>${esc(p.title)}</h3>
-      </a>`;
-    }).join('');
+    if (!list.length) return;
+    const link = p => safeUrl(p.link || '#blog');
+    const [first, ...rest] = list;
+    $('[data-posts]').innerHTML = `
+      <a class="news__big" href="${esc(link(first))}"${ext(link(first))}>
+        <div class="ph"><img src="${esc(first.img)}" alt="" loading="lazy"></div>
+        <h3>${esc(first.title)}</h3><time>${esc(first.date)}</time>
+      </a>
+      <div class="news__list">${rest.map(p => `
+        <a class="news__item" href="${esc(link(p))}"${ext(link(p))}>
+          <div class="ph"><img src="${esc(p.img)}" alt="" loading="lazy"></div>
+          <div>${p.tag ? `<small>${esc(p.tag)}</small>` : ''}<h3>${esc(p.title)}</h3><time>${esc(p.date)}</time></div>
+        </a>`).join('')}</div>`;
   }
 
-  /* ================= Lưới sản phẩm ================= */
+  /* ================= Gợi ý cho bạn ================= */
   function renderTabs() {
-    const items = [['all', 'Tất cả'], ['sale', 'Đang giảm giá'], ...(favs.size ? [['fav', `Yêu thích (${favs.size})`]] : []),
-      ...STORE.categories.filter(c => PRODUCTS.some(p => p.cat === c.id)).map(c => [c.id, c.name])];
+    const items = [['all', 'Tất cả'], ['sale', 'Đang giảm giá'], ...STORE.categories.filter(c => PRODUCTS.some(p => p.cat === c.id)).map(c => [c.id, c.name])];
     if (!items.some(([k]) => k === state.filter) && !GROUPS.some(g => g.id === state.filter)) state.filter = 'all';
-    $('[data-tabs]').innerHTML = items.map(([k, n]) =>
-      `<button class="chip ${state.filter === k ? 'is-active' : ''}" data-filter="${esc(k)}" role="tab" aria-selected="${state.filter === k}">${esc(n)}</button>`).join('');
-    $$('.hdr__link[href^="#group-"]').forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#group-' + state.filter));
+    $('[data-tabs]').innerHTML = items.map(([k, n]) => `<button class="chip ${state.filter === k ? 'is-active' : ''}" data-filter="${esc(k)}" aria-pressed="${state.filter === k}">${esc(n)}</button>`).join('');
   }
 
   function renderShop() {
@@ -364,16 +337,10 @@
     $('[data-grid="shop"]').innerHTML = list.map(card).join('');
     const empty = $('[data-empty]');
     empty.hidden = list.length > 0;
-    empty.innerHTML = state.filter === 'fav'
-      ? 'Bạn chưa thả tim sản phẩm nào.'
-      : `Chưa có sản phẩm phù hợp. Gọi <a href="tel:${esc(String(S.hotline || '').replace(/[^\d+]/g, ''))}">${esc(S.hotlineDisplay)}</a> hoặc xem <a href="${esc(safeUrl(S.facebook))}" target="_blank" rel="noopener">live trên Facebook</a> nha.`;
+    empty.innerHTML = `Chưa có sản phẩm phù hợp. Gọi <a href="${esc(tel())}">${esc(S.hotlineDisplay)}</a> hoặc xem <a href="${esc(safeUrl(S.facebook))}" target="_blank" rel="noopener">live trên Facebook</a> nha.`;
     const g = GROUPS.find(x => x.id === state.filter);
-    $('[data-shop-title]').textContent = state.filter === 'all' ? 'Khám phá tất cả'
-      : state.filter === 'sale' ? 'Đang giảm giá'
-      : state.filter === 'fav' ? 'Sản phẩm yêu thích'
-      : g ? g.name : catName(state.filter) || 'Sản phẩm';
+    $('[data-shop-title]').textContent = state.filter === 'all' ? 'Gợi ý cho bạn' : state.filter === 'sale' ? 'Đang giảm giá' : g ? g.name : catName(state.filter) || 'Sản phẩm';
   }
-
   function setFilter(f) { state.filter = f; renderShop(); }
 
   /* ================= Giỏ hàng ================= */
@@ -407,16 +374,13 @@
   function flyToCart(fromEl) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const img = fromEl.closest('.pc, .pd, .spot')?.querySelector('img');
-    const target = [...$$('[data-cart-count]')].find(el => el.offsetParent) ;
+    const target = [...$$('[data-cart-count]')].find(el => el.offsetParent);
     if (!img || !target) return;
     const a = img.getBoundingClientRect(), b = target.getBoundingClientRect();
     const f = Object.assign(document.createElement('img'), { src: img.src, className: 'fly', alt: '' });
-    f.style.left = a.left + a.width / 2 - 30 + 'px'; f.style.top = a.top + a.height / 2 - 30 + 'px';
+    f.style.left = a.left + a.width / 2 - 28 + 'px'; f.style.top = a.top + a.height / 2 - 28 + 'px';
     document.body.appendChild(f);
-    requestAnimationFrame(() => {
-      f.style.transform = `translate(${b.left - a.left - a.width / 2 + 30}px, ${b.top - a.top - a.height / 2 + 30}px) scale(.2)`;
-      f.style.opacity = '.4';
-    });
+    requestAnimationFrame(() => { f.style.transform = `translate(${b.left - a.left - a.width / 2 + 28}px, ${b.top - a.top - a.height / 2 + 28}px) scale(.2)`; f.style.opacity = '.4'; });
     setTimeout(() => f.remove(), 750);
   }
 
@@ -426,7 +390,7 @@
     return `
       <div><span>Tạm tính</span><span>${money(pr.sub)}</span></div>
       ${pr.discount ? `<div class="disc"><span>Mã ${esc(pr.v.code)}</span><span>-${money(pr.discount)}</span></div>` : ''}
-      <div><span>Vận chuyển</span><span>${pr.ship ? money(pr.ship) : 'Miễn phí'}</span></div>
+      <div><span>Phí vận chuyển</span><span>${pr.ship ? money(pr.ship) : 'Miễn phí'}</span></div>
       <div class="grand"><span>Tổng cộng</span><b>${money(pr.total)}</b></div>`;
   }
 
@@ -435,9 +399,7 @@
     $$('[data-cart-count]').forEach(b => { b.textContent = n; b.classList.toggle('is-zero', !n); });
     $('[data-cart-count-text]').textContent = n ? `(${n})` : '';
     const left = FREESHIP - pr.sub;
-    $('[data-ship-note]').innerHTML = !FREESHIP ? '' : left > 0
-      ? `Mua thêm <b>${money(left)}</b> để được miễn phí vận chuyển`
-      : 'Đơn hàng của bạn được <b>miễn phí vận chuyển</b>';
+    $('[data-ship-note]').innerHTML = left > 0 ? `Mua thêm <b>${money(left)}</b> để được miễn phí vận chuyển` : 'Đơn hàng của bạn được <b>miễn phí vận chuyển</b>';
     $('.ship').hidden = !FREESHIP || !n;
     $('[data-ship-bar]').style.width = Math.min(100, FREESHIP ? pr.sub / FREESHIP * 100 : 100) + '%';
     $('[data-totals]').innerHTML = totalsHtml(pr);
@@ -451,7 +413,7 @@
     } else { msg.className = 'coupon-msg'; msg.textContent = ''; }
 
     $('[data-cart-items]').innerHTML = !n
-      ? `<div class="cart-empty">${I.bag}<p>Giỏ hàng đang trống</p><button class="btn" data-action="close-all">Tiếp tục mua sắm</button></div>`
+      ? `<div class="cart-empty">${I.bag}<p>Giỏ hàng của bạn đang trống</p><button class="btn" data-action="close-all">Tiếp tục mua sắm</button></div>`
       : cart.map((i, idx) => {
         const p = byId(i.id);
         return `<div class="line">
@@ -468,16 +430,17 @@
       }).join('');
   }
 
-  /* ================= Lớp phủ: menu, giỏ, hộp thoại, tìm kiếm ================= */
-  const scrim = $('[data-scrim]'), drawer = $('[data-drawer]'), menu = $('[data-menu]'), modal = $('[data-modal]'), modalContent = $('[data-modal-content]'), panel = $('[data-search-panel]');
+  /* ================= Lớp phủ ================= */
+  const scrim = $('[data-scrim]'), drawer = $('[data-drawer]'), menu = $('[data-menu]'), modal = $('[data-modal]'), modalContent = $('[data-modal-content]');
   let lastFocus = null;
   const lock = on => document.body.classList.toggle('lock', on);
   const setOpen = (el, on) => { el.classList.toggle('is-open', on); el.setAttribute('aria-hidden', String(!on)); el.inert = !on; };
-  function remember() { if (!drawer.contains(document.activeElement) && !menu.contains(document.activeElement) && !modal.contains(document.activeElement)) lastFocus = document.activeElement; }
+  const anyOpen = () => [drawer, menu, modal].some(el => el.classList.contains('is-open'));
+  function remember() { if (![drawer, menu, modal].some(el => el.contains(document.activeElement))) lastFocus = document.activeElement; }
   function restore() { if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true }); lastFocus = null; }
 
   function openSheet(el) {
-    remember(); closeMega(); closeSearch(false);
+    remember(); closeDrop();
     [drawer, menu].forEach(s => setOpen(s, s === el));
     scrim.classList.add('is-open'); lock(true);
     setTimeout(() => $('button, a, input', el)?.focus({ preventScroll: true }), 50);
@@ -486,11 +449,11 @@
     const was = drawer.classList.contains('is-open') || menu.classList.contains('is-open');
     [drawer, menu].forEach(s => setOpen(s, false));
     scrim.classList.remove('is-open');
-    if (!modal.classList.contains('is-open') && panel.hidden) lock(false);
+    if (!anyOpen()) lock(false);
     if (was && refocus) restore();
   }
   function openModal(html, label) {
-    remember(); closeSheets(false); closeSearch(false);
+    remember(); closeSheets(false); closeDrop();
     modalContent.innerHTML = html;
     $('.modal__box').setAttribute('aria-label', label || 'Chi tiết');
     setOpen(modal, true); lock(true);
@@ -499,34 +462,12 @@
   }
   function closeModal() {
     if (!modal.classList.contains('is-open')) return;
-    setOpen(modal, false); lock(false); restore();
+    setOpen(modal, false); if (!anyOpen()) lock(false); restore();
   }
-  function openSearch() {
-    remember(); closeMega();
-    panel.hidden = false; lock(true);
-    const input = $('[data-search] input'); input.focus(); input.select();
-    searchResults(input.value);
-  }
-  function closeSearch(refocus = true) {
-    if (panel.hidden) return;
-    panel.hidden = true;
-    if (!modal.classList.contains('is-open') && !drawer.classList.contains('is-open') && !menu.classList.contains('is-open')) lock(false);
-    if (refocus) restore();
-  }
-  const megaBtn = $('[data-action="toggle-mega"]'), mega = $('[data-mega]');
-  function closeMega() { mega.hidden = true; megaBtn.setAttribute('aria-expanded', 'false'); }
-  function toggleMega(force) {
-    const open = force ?? mega.hidden;
-    mega.hidden = !open; megaBtn.setAttribute('aria-expanded', String(open));
-  }
-  let megaT;
-  $('.mega-wrap').addEventListener('mouseenter', () => { clearTimeout(megaT); if (matchMedia('(hover: hover)').matches) toggleMega(true); });
-  $('.mega-wrap').addEventListener('mouseleave', () => { megaT = setTimeout(closeMega, 180); });
 
-  // Giữ phím Tab bên trong lớp đang mở
   document.addEventListener('keydown', e => {
     if (e.key !== 'Tab') return;
-    const box = modal.classList.contains('is-open') ? modal : drawer.classList.contains('is-open') ? drawer : menu.classList.contains('is-open') ? menu : !panel.hidden ? panel : null;
+    const box = modal.classList.contains('is-open') ? modal : drawer.classList.contains('is-open') ? drawer : menu.classList.contains('is-open') ? menu : null;
     if (!box) return;
     const f = $$('a[href], button:not([disabled]), input, select, textarea', box).filter(el => el.offsetParent !== null);
     if (!f.length) return;
@@ -534,7 +475,7 @@
     else if (!e.shiftKey && document.activeElement === f.at(-1)) { e.preventDefault(); f[0].focus(); }
   });
 
-  /* ================= Chi tiết sản phẩm, thanh toán ================= */
+  /* ================= Chi tiết, thanh toán ================= */
   function viewProduct(id, notice = '') {
     const p = byId(id); if (!p) return;
     const gallery = [...new Set([p.img, ...p.gallery].filter(Boolean))];
@@ -548,16 +489,16 @@
         <div class="pd__info">
           <span class="pc__brand ${/minh họa/i.test(p.brand || '') ? 'demo' : ''}">${esc(p.brand || '')}${p.brand ? ' · ' : ''}${esc(catName(p.cat))}</span>
           <h2>${esc(p.name)}</h2>
-          <div class="pd__price ${off ? 'sale' : ''}"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s><em>Tiết kiệm ${off}%</em>` : ''}</div>
+          <div class="pd__price"><b>${money(p.price)}</b>${off ? `<s>${money(p.compare)}</s><em>-${off}%</em>` : ''}</div>
           ${p.desc ? `<p class="pd__desc">${esc(p.desc)}</p>` : ''}
-          ${p.opts.length ? `<div><span class="opt-label">Phân loại${notice ? ` <span style="color:var(--sale);font-weight:600">· ${esc(notice)}</span>` : ''}</span><div class="opts" data-opts style="margin-top:8px" role="radiogroup">${p.opts.map((o, i) => `<button class="opt ${i ? '' : 'is-active'}" data-opt="${esc(o)}" role="radio" aria-checked="${!i}">${esc(o)}</button>`).join('')}</div></div>` : ''}
+          ${p.opts.length ? `<div><span class="opt-label">Phân loại${notice ? ` <span style="color:var(--price);font-weight:500">(${esc(notice)})</span>` : ''}</span><div class="opts" data-opts role="radiogroup">${p.opts.map((o, i) => `<button class="opt ${i ? '' : 'is-active'}" data-opt="${esc(o)}" role="radio" aria-checked="${!i}">${esc(o)}</button>`).join('')}</div></div>` : ''}
           <div class="pd__buy">
             <div class="qty"><button data-pdq="-1" aria-label="Giảm">−</button><span data-pd-qty>1</span><button data-pdq="1" aria-label="Tăng">+</button></div>
-            <button class="btn" data-pd-add="${p.id}">${I.bag} Thêm vào giỏ · ${money(p.price)}</button>
+            <button class="btn" data-pd-add="${p.id}">${I.bag} Thêm vào giỏ</button>
           </div>
           <div class="pd__perks">
             <span>${I.shield}Hàng chính hãng</span>
-            <span>${I.truck}${FREESHIP ? `Freeship từ ${money(FREESHIP)}` : 'Giao toàn nước Mỹ'}</span>
+            <span>${I.truck}${FREESHIP ? `Freeship đơn từ ${money(FREESHIP)}` : 'Giao toàn nước Mỹ'}</span>
             <span>${I.back}Đổi trả 7 ngày</span>
             <span>${I.gift}Gói quà miễn phí</span>
           </div>
@@ -576,7 +517,7 @@
             <div class="field"><label for="c-name">Họ tên *</label><input id="c-name" name="name" required autocomplete="name"></div>
             <div class="field"><label for="c-phone">Số điện thoại *</label><input id="c-phone" name="phone" type="tel" required autocomplete="tel" inputmode="tel" pattern="[0-9+()\\-\\s.]{7,}"></div>
             <div class="field"><label for="c-addr">Địa chỉ nhận hàng *</label><textarea id="c-addr" name="address" rows="2" required autocomplete="street-address"></textarea></div>
-            <div class="field"><label>Thanh toán</label>
+            <div class="field"><label>Hình thức thanh toán</label>
               <label class="pay-opt"><input type="radio" name="pay" value="Zelle" checked><span class="pay__logo zelle">Zelle</span>${esc(S.zelleName)} · ${esc(S.zellePhone)}</label>
               <label class="pay-opt"><input type="radio" name="pay" value="Venmo"><span class="pay__logo venmo">venmo</span>${esc(S.venmo)}</label>
               <label class="pay-opt"><input type="radio" name="pay" value="Nhận tại Houston">Nhận hàng và trả tiền tại Houston</label>
@@ -613,12 +554,12 @@
       <div class="success">
         <div class="success__icon">${I.check}</div>
         <h2>Gần xong rồi, ${esc(d.name)}!</h2>
-        <p>Mã đơn <b>${code}</b> · Tổng tiền <b>${money(pr.total)}</b></p>
+        <p>Mã đơn <b>${code}</b> · Tổng tiền <b style="color:var(--price)">${money(pr.total)}</b></p>
         <p>Bấm một nút bên dưới để <b>gửi đơn cho shop</b>, Vân sẽ xác nhận ngay.</p>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0">
+        <div class="acts">
           <a class="btn" href="${esc(sms)}">${I.msg} Gửi qua tin nhắn</a>
-          <a class="btn btn--ghost" href="${esc(mail)}">${I.mail} Gửi qua email</a>
-          <button class="btn btn--ghost" data-copy-order>${I.copy} Sao chép đơn</button>
+          <a class="btn btn--line" href="${esc(mail)}">${I.mail} Gửi qua email</a>
+          <button class="btn btn--line" data-copy-order>${I.copy} Sao chép đơn</button>
         </div>
         ${pay ? `<p>Chuyển khoản và ghi mã <b>${code}</b> trong nội dung:</p>${pay}` : '<p>Vân sẽ gọi để hẹn giờ nhận hàng tại Houston.</p>'}
         <textarea hidden data-order-text>${esc(text)}</textarea>
@@ -634,7 +575,6 @@
     clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('is-show'), 2200);
   }
 
-  /* ================= Hiệu ứng ================= */
   function initCountdown() {
     const el = $('[data-countdown]'), pad = n => String(n).padStart(2, '0');
     const tick = () => {
@@ -647,34 +587,18 @@
     tick(); setInterval(tick, 1000);
   }
 
-  // Hiện dần khi cuộn tới; kiểm tra bằng vị trí thật nên không bao giờ để nội dung bị ẩn
-  let revealEls = [];
-  function initReveal() {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { $$('.reveal').forEach(e => e.classList.add('in')); return; }
-    revealEls = $$('.reveal');
-    checkReveal();
-    setTimeout(() => { revealEls.forEach(e => e.classList.add('in')); revealEls = []; }, 4000);
-  }
-  function checkReveal() {
-    if (!revealEls.length) return;
-    const h = innerHeight * .92;
-    revealEls = revealEls.filter(e => { if (e.getBoundingClientRect().top < h) { e.classList.add('in'); return false; } return true; });
-  }
-
   function updateRailNav() {
-    $$('[data-rail]').forEach(r => {
-      const btns = $$(`[data-scroll="${r.dataset.rail}"]`);
-      if (btns.length < 2) return;
-      btns[0].disabled = r.scrollLeft < 8;
-      btns[1].disabled = r.scrollLeft + r.clientWidth >= r.scrollWidth - 8;
-    });
+    const r = $('[data-rail="flash"]'), btns = $$('[data-scroll="flash"]');
+    if (!r || btns.length < 2) return;
+    btns[0].disabled = r.scrollLeft < 8;
+    btns[1].disabled = r.scrollLeft + r.clientWidth >= r.scrollWidth - 8;
   }
 
   /* ================= Khởi chạy ================= */
   applySettings();
-  renderNav();
+  initPetals();
+  renderMenus();
   renderHero();
-  renderCats();
   renderVouchers();
   renderFlash();
   renderPromos();
@@ -684,50 +608,38 @@
   renderCart();
   const slider = initSlider();
   initCountdown();
-  initReveal();
   updateRailNav();
-  $$('[data-rail]').forEach(r => r.addEventListener('scroll', () => requestAnimationFrame(updateRailNav), { passive: true }));
+  $('[data-rail="flash"]').addEventListener('scroll', () => requestAnimationFrame(updateRailNav), { passive: true });
   addEventListener('resize', updateRailNav);
-  [drawer, menu, modal].forEach(el => { el.inert = true; });
 
   /* ================= Sự kiện ================= */
   document.addEventListener('click', e => {
-    const t = e.target.closest('[data-filter],[data-add],[data-view],[data-action],[data-qty],[data-remove],[data-opt],[data-pdq],[data-pd-add],[data-thumb],[data-slide],[data-copy],[data-gchip],[data-key],[data-scroll],[data-fav],[data-search-all],[data-copy-order],a[href^="#"]');
-    if (!t) { if (!mega.hidden && !e.target.closest('.mega-wrap')) closeMega(); return; }
+    if (!e.target.closest('[data-search-wrap]')) closeDrop();
+    const t = e.target.closest('[data-filter],[data-add],[data-view],[data-action],[data-qty],[data-remove],[data-opt],[data-pdq],[data-pd-add],[data-thumb],[data-slide],[data-copy],[data-gchip],[data-key],[data-scroll],[data-search-all],[data-copy-order],a[href^="#"]');
+    if (!t) return;
     const d = t.dataset;
 
-    if (d.filter) { setFilter(d.filter); closeSheets(false); closeMega(); closeSearch(false); return; }
+    if (d.filter) { setFilter(d.filter); closeSheets(false); closeDrop(); return; }
     if (d.gchip) {
       $$(`[data-chips="${d.group}"] .chip`).forEach(c => c.classList.toggle('is-active', c === t));
-      const rail = $(`[data-rail="g-${d.group}"]`);
-      rail.innerHTML = PRODUCTS.filter(p => inFilter(p, d.gchip)).slice(0, 12).map(card).join('');
-      rail.scrollLeft = 0; updateRailNav();
+      $(`[data-grid="g-${d.group}"]`).innerHTML = PRODUCTS.filter(p => inFilter(p, d.gchip)).slice(0, 10).map(card).join('');
       return;
     }
     if (d.add) {
       const p = byId(d.add);
-      if (p?.opts.length) viewProduct(d.add, 'Vui lòng chọn');
+      if (p?.opts.length) viewProduct(d.add, 'vui lòng chọn');
       else addToCart(d.add, 1, '', t);
       return;
     }
     if (d.view) { e.preventDefault(); viewProduct(d.view); return; }
-    if (d.fav) {
-      favs.has(d.fav) ? favs.delete(d.fav) : favs.add(d.fav);
-      store.set(KEY.fav, [...favs]);
-      const on = favs.has(d.fav);
-      $$(`[data-fav="${d.fav}"]`).forEach(b => { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
-      toast(on ? 'Đã thêm vào yêu thích' : 'Đã bỏ khỏi yêu thích');
-      renderTabs();
-      return;
-    }
     if (d.slide) { e.preventDefault(); slider.next(+d.slide); return; }
     if (d.scroll) { const r = $(`[data-rail="${d.scroll}"]`); r.scrollBy({ left: r.clientWidth * .9 * +d.dir }); return; }
-    if (d.key) { const i = $('[data-search] input'); i.value = d.key; searchResults(d.key); i.focus(); return; }
-    if (d.searchAll != null) { closeSearch(false); setFilter('all'); $('#shop').scrollIntoView(); return; }
+    if (d.key) { sInput.value = d.key; renderSearch(); sInput.focus(); return; }
+    if (d.searchAll != null) { closeDrop(); setFilter('all'); $('#shop').scrollIntoView(); return; }
     if (d.copy) {
       coupon = d.copy; saveCart(); renderVouchers();
       navigator.clipboard?.writeText(d.copy).catch(() => {});
-      toast(`Đã lưu mã ${d.copy}`);
+      toast(`Đã lưu mã ${d.copy}, mã sẽ tự áp dụng khi thanh toán`);
       return;
     }
     if (d.copyOrder != null) {
@@ -757,52 +669,42 @@
         'open-menu': () => openSheet(menu),
         'close-all': () => closeSheets(),
         'close-modal': closeModal,
-        'open-search': openSearch,
-        'close-search': () => closeSearch(),
-        'toggle-mega': () => toggleMega(),
-        'to-top': () => scrollTo({ top: 0, behavior: 'smooth' }),
+        'to-top': () => { closeSheets(false); scrollTo({ top: 0, behavior: 'smooth' }); },
         checkout
       })[d.action]?.();
       return;
     }
-    // Liên kết nội bộ (#...) trong menu/ngăn kéo: đóng lớp phủ rồi cuộn tới
-    if (t.matches('a[href^="#"]')) {
-      const href = t.getAttribute('href');
-      closeSheets(false); closeMega(); closeSearch(false);
-      if (href === '#top') { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
-    }
+    if (t.matches('a[href^="#"]')) { closeSheets(false); closeDrop(); }
   });
 
   scrim.addEventListener('click', () => closeSheets());
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  panel.addEventListener('click', e => { if (e.target === panel || e.target.classList.contains('wrap')) closeSearch(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (modal.classList.contains('is-open')) closeModal();
-      else if (!panel.hidden) closeSearch();
-      else if (!mega.hidden) { closeMega(); megaBtn.focus(); }
+      else if (!drop.hidden) { closeDrop(); sInput.blur(); }
       else closeSheets();
     }
-    if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
+    if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); sInput.focus(); }
   });
 
   let qT;
-  $('[data-search] input').addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => searchResults(e.target.value), 120); });
+  sInput.addEventListener('focus', renderSearch);
+  sInput.addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(renderSearch, 120); });
 
   document.addEventListener('submit', e => {
     const f = e.target;
     if (f.matches('[data-search]')) {
       e.preventDefault();
-      searchResults(f.q.value);
-      $('.result', panel)?.focus();
+      renderSearch();
+      $('.sres', drop)?.focus();
     } else if (f.matches('[data-coupon-form]')) {
       e.preventDefault();
       const code = f.code.value.trim().toUpperCase();
-      const msg = $('[data-coupon-msg]');
       if (!code) return;
       if (!VOUCHERS.find(v => v.code === code)) {
         coupon = null; saveCart(); renderVouchers();
-        msg.className = 'coupon-msg err'; msg.textContent = 'Mã giảm giá không đúng';
+        const msg = $('[data-coupon-msg]'); msg.className = 'coupon-msg err'; msg.textContent = 'Mã giảm giá không đúng';
         return;
       }
       coupon = code; saveCart(); renderVouchers();
@@ -813,15 +715,10 @@
 
   $('[data-sort]').addEventListener('change', e => { state.sort = e.target.value; renderShop(); });
 
-  const hdr = $('[data-hdr]'), topBtn = $('.float--top');
+  const topBtn = $('.fbtn--top');
   let ticking = false;
   addEventListener('scroll', () => {
     if (ticking) return; ticking = true;
-    requestAnimationFrame(() => {
-      hdr.classList.toggle('scrolled', scrollY > 8);
-      topBtn.classList.toggle('show', scrollY > 700);
-      checkReveal();
-      ticking = false;
-    });
+    requestAnimationFrame(() => { topBtn.classList.toggle('show', scrollY > 700); ticking = false; });
   }, { passive: true });
 })();
