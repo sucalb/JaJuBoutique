@@ -2,211 +2,229 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>JaJu Boutique | Sâm Hàn Quốc, mỹ phẩm, thời trang tại Houston</title>
   <meta name="description" content="JaJu Boutique: hồng sâm, hắc sâm Hàn Quốc, mỹ phẩm Nhật Hàn chính hãng và thời trang. Houston, TX. Hotline 832-863-2592.">
   <meta name="theme-color" content="#7b3f9e">
+  <meta property="og:title" content="JaJu Boutique">
+  <meta property="og:description" content="Sâm Hàn Quốc, mỹ phẩm Nhật Hàn chính hãng và thời trang tại Houston, TX.">
+  <meta property="og:image" content="assets/img/emblem.jpg">
   <link rel="icon" href="assets/img/emblem.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=7">
 </head>
-<body>
+<body class="is-loading">
+  <a class="skip" href="#main">Bỏ qua tới nội dung</a>
 
-  <a class="promo-strip" href="#flash"><span data-promo-text></span><span class="promo-strip__pill">Mua ngay</span></a>
+  <!-- Thông báo chạy -->
+  <div class="announce" data-announce aria-live="polite"></div>
 
-  <header class="header" id="top">
-    <div class="container header__main">
-      <button class="icon-btn only-mobile" data-action="open-menu" aria-label="Danh mục">
+  <!-- Header -->
+  <header class="hdr" data-hdr>
+    <div class="wrap hdr__bar">
+      <button class="ibtn only-m" data-action="open-menu" aria-label="Mở danh mục">
         <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </button>
-      <a href="#top" class="logo"><img src="assets/img/logo.png" alt="JaJu Boutique"></a>
+      <a href="#top" class="hdr__logo" aria-label="Trang chủ"><img src="assets/img/logo.png" alt="JaJu Boutique" width="150" height="85"></a>
 
-      <div class="search-wrap">
-        <form class="search" role="search" data-search>
-          <input type="search" name="q" placeholder="Bạn muốn tìm gì hôm nay?" aria-label="Tìm sản phẩm" autocomplete="off">
-          <button type="submit" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-        </form>
-        <div class="hot-keys" data-hot-keys></div>
-      </div>
+      <nav class="hdr__nav only-d" aria-label="Danh mục chính">
+        <div class="mega-wrap">
+          <button class="hdr__link" data-action="toggle-mega" aria-expanded="false" aria-controls="mega">
+            Danh mục <svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mega" id="mega" data-mega hidden></div>
+        </div>
+        <span data-group-links></span>
+        <a class="hdr__link hdr__link--sale" href="#shop" data-filter="sale">Sale</a>
+        <a class="hdr__link" href="#blog">Cẩm nang</a>
+      </nav>
 
-      <div class="header__actions">
-        <a class="h-action only-desktop" data-link="tel">
-          <span class="h-action__icon"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
-          <span class="h-action__text"><small>Hotline đặt hàng</small><span data-text="hotlineDisplay"></span></span>
-        </a>
-        <a class="h-action only-desktop" data-link="facebook" target="_blank" rel="noopener">
-          <span class="h-action__icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="3"/><path d="m10 9.5 4.5 2.5-4.5 2.5Z" fill="currentColor"/></svg></span>
-          <span class="h-action__text"><small>Live sale</small>Facebook</span>
-        </a>
-        <button class="h-action cart-trigger" data-action="open-cart" aria-label="Giỏ hàng">
-          <span class="h-action__icon">
-            <svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg>
-            <i class="badge-count is-zero" data-cart-count>0</i>
-          </span>
-          <span class="h-action__text only-desktop"><small>Giỏ hàng</small><span data-cart-total>$0.00</span></span>
+      <div class="hdr__actions">
+        <button class="hdr__search only-d" data-action="open-search" aria-label="Tìm kiếm">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>Tìm sản phẩm...</span>
+          <kbd>/</kbd>
         </button>
-      </div>
-    </div>
-
-    <div class="subnav only-desktop">
-      <div class="container subnav__inner">
-        <button class="cat-btn" data-action="scroll-shop">
-          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          Danh mục sản phẩm
+        <button class="ibtn only-m" data-action="open-search" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <a class="hdr__phone only-d" data-link="tel">
+          <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+          <span><small>Hotline</small><b data-text="hotlineDisplay"></b></span>
+        </a>
+        <button class="ibtn ibtn--cart" data-action="open-cart" aria-label="Giỏ hàng" data-cart-icon>
+          <svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <i class="count is-zero" data-cart-count>0</i>
         </button>
-        <ul class="trust">
-          <li><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>Cam kết hàng chính hãng</li>
-          <li><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><span>Freeship đơn từ $<span data-text="freeship"></span></span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg>Đổi trả trong 7 ngày</li>
-          <li><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg>Thanh toán Zelle, Venmo</li>
-        </ul>
       </div>
     </div>
   </header>
 
-  <main class="page">
-    <section class="container hero">
-      <aside class="side-menu" data-side-menu aria-label="Danh mục"></aside>
+  <!-- Tìm kiếm -->
+  <div class="search-panel" data-search-panel hidden>
+    <div class="wrap">
+      <form class="search-box" role="search" data-search>
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" name="q" placeholder="Tìm hồng sâm, son môi, túi xách..." aria-label="Tìm sản phẩm" autocomplete="off" enterkeyhint="search">
+        <button type="button" class="search-box__close" data-action="close-search">Đóng</button>
+      </form>
+      <div class="search-body">
+        <div class="hot" data-hot-keys></div>
+        <div class="results" data-search-results></div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main" class="page">
+    <!-- Hero dạng bento -->
+    <section class="wrap hero" id="top" aria-label="Khuyến mãi nổi bật">
       <div class="slider" data-slider>
         <div class="slides" data-slides></div>
-        <button class="slider__nav prev" data-slide="-1" aria-label="Banner trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-        <button class="slider__nav next" data-slide="1" aria-label="Banner sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-        <div class="slider__dots" data-dots></div>
-      </div>
-      <div class="side-banners" data-mini></div>
-    </section>
-
-    <section class="container panel quick-cats" aria-label="Danh mục nhanh">
-      <div class="quick-cats__list" data-quick-cats></div>
-    </section>
-
-    <section class="container" id="vouchers">
-      <h2 class="sec-title">Ưu đãi độc quyền website</h2>
-      <div class="vouchers" data-vouchers></div>
-    </section>
-
-    <section class="container" id="flash">
-      <div class="flash">
-        <div class="flash__head">
-          <div class="flash__title">
-            <span class="flash__logo">FLASH SALE</span>
-            <div class="countdown" data-countdown aria-label="Thời gian còn lại">
-              <span data-h>00</span><i>:</i><span data-m>00</span><i>:</i><span data-s>00</span>
-            </div>
-          </div>
-          <div class="carousel-nav">
-            <button data-scroll="flash" data-dir="-1" aria-label="Trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-            <button data-scroll="flash" data-dir="1" aria-label="Sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+        <div class="slider__ui">
+          <div class="dots" data-dots></div>
+          <div class="arrows">
+            <button data-slide="-1" aria-label="Banner trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button data-slide="1" aria-label="Banner sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
           </div>
         </div>
-        <div class="carousel" data-carousel="flash"></div>
       </div>
+      <div class="tiles" data-tiles></div>
     </section>
 
-    <section class="container promo-row" data-promos></section>
+    <!-- Danh mục -->
+    <section class="wrap sec reveal" aria-label="Danh mục">
+      <div class="cats" data-cats></div>
+    </section>
 
+    <!-- Mã giảm giá -->
+    <section class="wrap sec reveal" id="vouchers">
+      <div class="sec__head"><h2>Ưu đãi riêng cho bạn</h2><p class="sec__sub">Bấm lưu mã, mã sẽ tự áp dụng khi thanh toán</p></div>
+      <div class="vouchers rail" data-vouchers></div>
+    </section>
+
+    <!-- Flash sale -->
+    <section class="wrap sec reveal" id="flash">
+      <div class="sec__head">
+        <h2 class="flash-title"><svg viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg>Flash Sale</h2>
+        <div class="timer" data-countdown aria-label="Thời gian còn lại"><span>Kết thúc sau</span><b data-h>00</b>:<b data-m>00</b>:<b data-s>00</b></div>
+        <div class="rail-nav only-d"><button data-scroll="flash" data-dir="-1" aria-label="Trước"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button data-scroll="flash" data-dir="1" aria-label="Sau"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+      </div>
+      <div class="rail products-rail" data-rail="flash"></div>
+    </section>
+
+    <!-- Bộ sưu tập -->
+    <section class="wrap sec reveal">
+      <div class="sec__head"><h2>Bộ sưu tập</h2></div>
+      <div class="collections rail" data-promos></div>
+    </section>
+
+    <!-- Các khu sản phẩm -->
     <div data-groups></div>
 
-    <section class="container panel" id="shop">
-      <div class="shop-head">
-        <h2 class="sec-title" data-shop-title>Gợi ý cho bạn</h2>
-        <select class="select" data-sort aria-label="Sắp xếp">
-          <option value="featured">Sắp xếp: Nổi bật</option>
-          <option value="discount">Giảm giá nhiều</option>
-          <option value="price-asc">Giá thấp đến cao</option>
-          <option value="price-desc">Giá cao đến thấp</option>
-        </select>
+    <!-- Tất cả sản phẩm -->
+    <section class="wrap sec" id="shop">
+      <div class="sec__head">
+        <h2 data-shop-title>Khám phá tất cả</h2>
+        <label class="sort"><span class="only-d">Sắp xếp</span>
+          <select data-sort aria-label="Sắp xếp">
+            <option value="featured">Nổi bật</option>
+            <option value="discount">Giảm nhiều nhất</option>
+            <option value="price-asc">Giá thấp đến cao</option>
+            <option value="price-desc">Giá cao đến thấp</option>
+          </select>
+        </label>
       </div>
-      <div class="tabs" data-tabs></div>
-      <div class="grid grid--5" data-grid="shop"></div>
+      <div class="filters" data-tabs role="tablist"></div>
+      <div class="grid" data-grid="shop"></div>
       <div class="empty" data-empty hidden></div>
     </section>
 
-    <section class="container commit">
-      <div><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg><b>100% chính hãng</b><span>Nguồn gốc Nhật, Hàn rõ ràng</span></div>
-      <div><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><b>Giao toàn nước Mỹ</b><span>Freeship đơn từ $<span data-text="freeship"></span></span></div>
-      <div><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg><b>Đổi trả 7 ngày</b><span>Hàng lỗi, giao sai được đổi</span></div>
-      <div><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4Z"/><path d="M8 10h8"/></svg><b>Tư vấn tận tình</b><span>Gọi, nhắn Vân bất cứ lúc nào</span></div>
+    <!-- Cam kết -->
+    <section class="wrap sec reveal">
+      <ul class="promise">
+        <li><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Chính hãng 100%</b><span>Nguồn gốc Nhật, Hàn rõ ràng</span></div></li>
+        <li><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><div><b>Giao toàn nước Mỹ</b><span>Freeship đơn từ $<span data-text="freeship"></span></span></div></li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6L4 9"/><path d="M4 4v5h5"/></svg><div><b>Đổi trả 7 ngày</b><span>Hàng lỗi, giao sai được đổi</span></div></li>
+        <li><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4Z"/><path d="M8 10h8"/></svg><div><b>Tư vấn tận tình</b><span>Gọi, nhắn Vân bất cứ lúc nào</span></div></li>
+      </ul>
     </section>
 
-    <section class="container" id="blog">
-      <div class="shop-head">
-        <h2 class="sec-title">Cẩm nang sức khỏe &amp; làm đẹp</h2>
-        <a class="link-more" href="#blog">Xem tất cả</a>
-      </div>
-      <div class="blog" data-posts></div>
+    <!-- Cẩm nang -->
+    <section class="wrap sec reveal" id="blog">
+      <div class="sec__head"><h2>Cẩm nang</h2><p class="sec__sub">Mẹo làm đẹp, chăm sóc sức khỏe từ Vân</p></div>
+      <div class="posts rail" data-posts></div>
     </section>
 
-    <section class="container">
+    <!-- Theo dõi -->
+    <section class="wrap sec reveal">
       <div class="follow">
-        <img src="assets/img/emblem.jpg" alt="">
-        <div class="follow__text">
-          <b>Theo dõi <span data-text="shopName"></span> trên Facebook</b>
-          <span>Hơn <span data-text="followers"></span> người đang theo dõi. Vân lên live mỗi tuần với giá ưu đãi chỉ có trong live.</span>
+        <img src="assets/img/emblem.jpg" alt="" loading="lazy">
+        <div>
+          <h2>Săn deal trong live cùng Vân</h2>
+          <p>Hơn <span data-text="followers"></span> người đang theo dõi <span data-text="shopName"></span>. Live mỗi tuần, giá chỉ có trong live.</p>
         </div>
-        <a class="btn" data-link="facebook" target="_blank" rel="noopener">Theo dõi ngay</a>
+        <a class="btn btn--light" data-link="facebook" target="_blank" rel="noopener">Theo dõi Facebook</a>
       </div>
     </section>
   </main>
 
-  <footer class="footer" id="contact">
-    <div class="container footer__grid">
-      <div class="footer__brand">
-        <img src="assets/img/logo.png" alt="JaJu Boutique">
+  <footer class="ftr" id="contact">
+    <div class="wrap ftr__grid">
+      <div class="ftr__brand">
+        <img src="assets/img/logo.png" alt="JaJu Boutique" loading="lazy">
         <p data-text="tagline"></p>
       </div>
       <div>
-        <h4>Liên hệ</h4>
+        <h3>Liên hệ</h3>
         <p data-text="address"></p>
-        <p>Hotline: <a data-link="tel"><span data-text="hotlineDisplay"></span></a></p>
-        <p>Email: <a data-link="email"><span data-text="email"></span></a></p>
-        <p><a data-link="facebook" target="_blank" rel="noopener">Facebook: <span data-text="shopName"></span></a></p>
+        <p><a data-link="tel">Hotline: <span data-text="hotlineDisplay"></span></a></p>
+        <p><a data-link="email" data-text="email"></a></p>
+        <p><a data-link="facebook" target="_blank" rel="noopener">Facebook <span data-text="shopName"></span></a></p>
       </div>
       <div>
-        <h4>Hỗ trợ khách hàng</h4>
-        <a href="#pay">Hướng dẫn mua hàng</a>
-        <a href="#pay">Hướng dẫn thanh toán</a>
-        <a href="#contact">Chính sách giao hàng</a>
-        <a href="#contact">Chính sách đổi trả</a>
+        <h3>Mua sắm</h3>
+        <div data-footer-cats></div>
       </div>
       <div id="pay">
-        <h4>Thanh toán</h4>
+        <h3>Thanh toán</h3>
         <div data-pay-cards></div>
+        <p class="ftr__note">Ghi tên và số điện thoại trong nội dung chuyển khoản.</p>
       </div>
     </div>
-    <div class="footer__bottom">
-      <div class="container">© <span data-year></span> <span data-text="shopName"></span>. <span data-text="footerNote"></span></div>
-    </div>
+    <div class="ftr__bottom"><div class="wrap">© <span data-year></span> <span data-text="shopName"></span>. <span data-text="footerNote"></span></div></div>
   </footer>
 
-  <div class="float-actions">
-    <a data-link="tel" class="fa fa--call" aria-label="Gọi cho shop"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></a>
-    <button class="fa fa--top" data-action="to-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg></button>
+  <!-- Nút nổi -->
+  <div class="floats">
+    <button class="float float--top" data-action="to-top" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></svg></button>
+    <a class="float float--call only-d" data-link="tel" aria-label="Gọi cho shop"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></a>
   </div>
 
-  <nav class="bottom-nav only-mobile" aria-label="Điều hướng">
+  <!-- Điều hướng dưới (mobile) -->
+  <nav class="tabbar only-m" aria-label="Điều hướng nhanh">
     <a href="#top"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3Z"/></svg>Trang chủ</a>
-    <button data-action="open-menu"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Danh mục</button>
-    <a href="#flash"><svg viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg>Flash sale</a>
-    <button data-action="open-cart"><span class="bn-cart"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg><i class="badge-count is-zero" data-cart-count>0</i></span>Giỏ hàng</button>
+    <button data-action="open-menu"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>Danh mục</button>
+    <a href="#flash"><svg viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg>Sale</a>
+    <button data-action="open-cart"><span class="tabbar__cart"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><i class="count is-zero" data-cart-count>0</i></span>Giỏ hàng</button>
     <a data-link="tel"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Gọi shop</a>
   </nav>
 
-  <div class="overlay" data-overlay></div>
-  <aside class="sheet sheet--left" data-menu aria-hidden="true">
-    <div class="sheet__head"><img src="assets/img/logo.png" alt="JaJu Boutique"><button class="icon-btn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="scrim" data-scrim></div>
+
+  <!-- Menu mobile -->
+  <aside class="sheet sheet--left" data-menu aria-label="Danh mục" aria-hidden="true" inert>
+    <div class="sheet__head"><img src="assets/img/logo.png" alt="JaJu Boutique"><button class="ibtn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
     <div class="sheet__body" data-menu-list></div>
   </aside>
 
-  <aside class="sheet sheet--right" data-drawer aria-hidden="true">
-    <div class="sheet__head"><h3>Giỏ hàng <span data-cart-count-text></span></h3><button class="icon-btn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-    <div class="ship-meter"><p data-ship-note></p><div class="ship-meter__bar"><i data-ship-bar></i></div></div>
+  <!-- Giỏ hàng -->
+  <aside class="sheet sheet--right" data-drawer aria-label="Giỏ hàng" aria-hidden="true" inert>
+    <div class="sheet__head"><h2>Giỏ hàng <span data-cart-count-text></span></h2><button class="ibtn" data-action="close-all" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="ship"><p data-ship-note></p><div class="ship__bar"><i data-ship-bar></i></div></div>
     <div class="sheet__body" data-cart-items></div>
-    <div class="sheet__foot">
+    <div class="sheet__foot" data-cart-foot>
       <form class="coupon" data-coupon-form>
-        <input name="code" placeholder="Nhập mã giảm giá" aria-label="Mã giảm giá" autocomplete="off">
+        <input name="code" placeholder="Mã giảm giá" aria-label="Mã giảm giá" autocomplete="off" autocapitalize="characters">
         <button type="submit">Áp dụng</button>
       </form>
       <p class="coupon-msg" data-coupon-msg></p>
@@ -215,24 +233,24 @@
     </div>
   </aside>
 
-  <div class="modal" data-modal aria-hidden="true">
-    <div class="modal__box" role="dialog" aria-modal="true">
-      <button class="icon-btn modal__close" data-action="close-modal" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <!-- Hộp thoại -->
+  <div class="modal" data-modal aria-hidden="true" inert>
+    <div class="modal__box" role="dialog" aria-modal="true" aria-label="Chi tiết">
+      <button class="ibtn modal__close" data-action="close-modal" aria-label="Đóng"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div data-modal-content></div>
     </div>
   </div>
 
-  <div class="toast" data-toast></div>
-  <div class="preview-bar" data-preview-bar hidden>Đang xem bản nháp từ trang quản trị. <a href="admin.html">Quay lại quản trị</a></div>
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+  <div class="preview-bar" data-preview-bar hidden>Đang xem bản nháp <a href="admin.html">Về trang quản trị</a></div>
 
   <script>
-    // Tải dữ liệu cửa hàng (luôn lấy bản mới nhất), rồi chạy giao diện.
     (function () {
       var s = document.createElement('script');
       s.src = 'data/store.js?t=' + Date.now();
       s.onload = s.onerror = function () {
         var a = document.createElement('script');
-        a.src = 'assets/js/app.js?t=' + Date.now();
+        a.src = 'assets/js/app.js?v=5';
         document.body.appendChild(a);
       };
       document.body.appendChild(s);

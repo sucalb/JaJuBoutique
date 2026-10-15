@@ -19,6 +19,8 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = n => '$' + (+n || 0).toFixed(2);
   const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  const RESERVED = ['all', 'sale', 'shop', 'fav', 'flash', 'ginseng-x'];
+  const uniqueId = (base, taken) => { let id = RESERVED.includes(base) ? base + '-1' : base, n = 2; while (taken.includes(id)) id = `${base}-${n++}`; return id; };
   const slug = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || uid('c');
   const ls = {
     get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
@@ -27,8 +29,15 @@
   };
 
   if (!window.JAJU_STORE) { document.body.innerHTML = '<p style="padding:30px">Không tải được data/store.js</p>'; return; }
-  let BASE = clone(window.JAJU_STORE);
-  let D = ls.get(DRAFT_KEY, null) || clone(BASE);
+  const normalize = o => ({ settings: {}, groups: [], categories: [], products: [], vouchers: [], slides: [], miniBanners: [], promos: [], posts: [], spotlight: {}, ...o, settings: { theme: {}, ...(o.settings || {}) } });
+  // So sánh không phụ thuộc thứ tự khóa, coi null và thiếu là như nhau
+  const stable = o => JSON.stringify(o, (k, v) => v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.keys(v).sort().filter(x => v[x] != null).map(x => [x, v[x]])) : v);
+  const BASE_KEY = 'jaju-admin-base';
+  let BASE = normalize(clone(window.JAJU_STORE));
+  let D = normalize(ls.get(DRAFT_KEY, null) || clone(BASE));
+  // 12: bản nháp được tạo từ một bản website cũ hơn bản đang chạy
+  const draftBase = ls.get(BASE_KEY, null);
+  const staleDraft = !!ls.get(DRAFT_KEY, null) && draftBase && draftBase !== stable(BASE);
 
   const ICONS = {
     overview: '<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
@@ -75,10 +84,12 @@
   ];
 
   /* ================= Lưu nháp, trạng thái ================= */
-  const isDirty = () => JSON.stringify(D) !== JSON.stringify(BASE);
+  const isDirty = () => stable(D) !== stable(BASE);
+  let saveFailed = false;
   function save(msg) {
-    const ok = ls.set(DRAFT_KEY, D);
-    if (!ok) toast('Bộ nhớ trình duyệt đã đầy. Hãy xuất bản để giải phóng ảnh đã tải lên.');
+    const ok = ls.set(DRAFT_KEY, D) && (ls.get(BASE_KEY, null) ? true : ls.set(BASE_KEY, stable(BASE)));
+    saveFailed = !ok;
+    if (!ok) openDialog('Bộ nhớ trình duyệt đã đầy', '<p>Thay đổi mới nhất <b>chưa được lưu</b> vì ảnh tải lên chiếm hết bộ nhớ của trình duyệt (khoảng 5MB).</p><p style="margin-top:8px">Hãy bấm <b>Xuất bản</b> ngay để đưa ảnh lên website và giải phóng bộ nhớ. Đừng tải lại trang trước khi xuất bản.</p>');
     else if (msg) toast(msg);
     renderStatus();
     renderNav();
@@ -92,14 +103,15 @@
 
   /* ================= Đăng nhập ================= */
   async function sha256(text) {
-    if (!crypto?.subtle) return text;
+    if (!window.crypto?.subtle) throw new Error('Trình duyệt chặn mã hóa trên trang không bảo mật. Hãy mở bằng https.');
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
   }
   function showApp() { $('[data-login]').hidden = true; $('[data-app]').hidden = false; route(); }
   $('[data-login-form]').addEventListener('submit', async e => {
     e.preventDefault();
-    const h = await sha256(e.target.pw.value);
+    let h;
+    try { h = await sha256(e.target.pw.value); } catch (err) { $('[data-login-err]').textContent = err.message; return; }
     const expected = D.settings.adminHash || BASE.settings.adminHash;
     if (h === expected || h === BASE.settings.adminHash) {
       try { sessionStorage.setItem(SESSION_KEY, '1'); } catch { /* bỏ qua */ }
@@ -131,6 +143,7 @@
   // f: { key, label, type, full, options, hint, placeholder }
   function field(f, v) {
     const id = 'f_' + f.key;
+    if (f.type === 'select' && v != null && v !== '' && !f.options.some(([o]) => String(o) === String(v))) f = { ...f, options: [[v, `${v} (hiện tại)`], ...f.options] };
     let ctl = '';
     switch (f.type) {
       case 'textarea': ctl = `<textarea class="textarea" id="${id}" data-key="${f.key}" rows="${f.rows || 3}" placeholder="${esc(f.placeholder || '')}">${esc(v)}</textarea>`; break;
@@ -203,7 +216,8 @@
     if (t.matches('[data-upload]')) {
       const f = t.files[0]; if (!f) return;
       const wrap = t.closest('[data-img-field]');
-      const url = await fileToDataUrl(f);
+      let url;
+      try { url = await fileToDataUrl(f); } catch { toast('Không đọc được ảnh này. Hãy chọn ảnh JPG hoặc PNG.'); t.value = ''; return; }
       const input = $('[data-type="image"]', wrap);
       input.value = ''; input.dataset.value = url;
       $('[data-img-preview]', wrap).innerHTML = `<img src="${url}" alt="">`;
@@ -211,7 +225,7 @@
     if (t.matches('[data-gal-add]')) {
       const wrap = t.closest('[data-gallery]');
       const arr = JSON.parse(wrap.dataset.value || '[]');
-      for (const f of t.files) arr.push(await fileToDataUrl(f));
+      for (const f of t.files) { try { arr.push(await fileToDataUrl(f)); } catch { toast('Bỏ qua 1 ảnh không đọc được (chỉ nhận JPG, PNG, WEBP)'); } }
       wrap.outerHTML = galleryField(wrap.dataset.key, arr);
     }
   });
@@ -246,15 +260,16 @@
       ? `<button class="btn btn--ghost" data-action="close-dialog">Hủy</button><button class="btn" data-action="dialog-save">${saveText}</button>`
       : `<button class="btn" data-action="close-dialog">Đóng</button>`;
     dialogSave = onSave;
+    dialogCancel = null;
     $('[data-dialog]').hidden = false;
     $('[data-dialog-body] input, [data-dialog-body] textarea')?.focus();
   }
-  const closeDialog = () => { $('[data-dialog]').hidden = true; dialogSave = null; };
+  let dialogCancel = null;
+  const closeDialog = () => { $('[data-dialog]').hidden = true; dialogSave = null; const c = dialogCancel; dialogCancel = null; c?.(); };
   function confirmBox(text, okText = 'Đồng ý') {
     return new Promise(res => {
-      openDialog('Xác nhận', `<p>${text}</p>`, () => { res(true); return true; }, okText);
-      const off = () => res(false);
-      $('[data-dialog] [data-action="close-dialog"]').addEventListener('click', off, { once: true });
+      openDialog('Xác nhận', `<p>${text}</p>`, () => { dialogCancel = null; res(true); return true; }, okText);
+      dialogCancel = () => res(false);
     });
   }
 
@@ -266,6 +281,7 @@
     const demo = D.products.filter(p => /minh họa/i.test(p.brand || '')).length;
     const stat = (icon, n, label, bg, color) => `<div class="stat"><span class="stat__icon" style="background:${bg};color:${color}">${svg(icon)}</span><div><b>${n}</b><span>${label}</span></div></div>`;
     $('[data-content]').innerHTML = `
+      ${staleDraft ? '<div class="notice">Website vừa được cập nhật từ máy khác sau khi bạn bắt đầu sửa trên máy này. Nếu muốn lấy nội dung mới nhất, vào <b>Xuất bản → Bỏ thay đổi</b>.</div>' : ''}
       ${isDirty() ? '<div class="notice">Bạn có thay đổi chưa xuất bản. Bấm <b>Xem trước</b> để kiểm tra, rồi <b>Xuất bản</b> để cập nhật lên website.</div>' : ''}
       <div class="stats">
         ${stat('products', D.products.length, `sản phẩm (${hidden} đang ẩn)`, '#f5edfa', '#7b3f9e')}
@@ -318,6 +334,7 @@
     const list = D.products.map((p, i) => ({ p, i })).filter(({ p }) =>
       (!prodState.cat || p.cat === prodState.cat) && (!q || `${p.name} ${p.brand}`.toLowerCase().includes(q)));
     const catName = id => D.categories.find(c => c.id === id)?.name || '(chưa có)';
+    const filtered = !!(prodState.q || prodState.cat);
     $('[data-content]').innerHTML = `
       <div class="card">
         <div class="toolbar">
@@ -340,8 +357,8 @@
                   <td><div class="row-actions">
                     <button class="icon-btn" title="Sửa" data-edit-product="${i}">${svg('edit')}</button>
                     <button class="icon-btn hide-sm" title="Nhân bản" data-dup-product="${i}">${svg('copy')}</button>
-                    <button class="icon-btn hide-sm" title="Lên" data-move="products" data-i="${i}" data-d="-1">${svg('up')}</button>
-                    <button class="icon-btn hide-sm" title="Xuống" data-move="products" data-i="${i}" data-d="1">${svg('down')}</button>
+                    ${filtered ? '' : `<button class="icon-btn hide-sm" title="Lên" data-move="products" data-i="${i}" data-d="-1">${svg('up')}</button>
+                    <button class="icon-btn hide-sm" title="Xuống" data-move="products" data-i="${i}" data-d="1">${svg('down')}</button>`}
                     <button class="icon-btn danger" title="Xóa" data-del="products" data-i="${i}">${svg('trash')}</button>
                   </div></td>
                 </tr>`).join('') || '<tr><td colspan="7"><div class="empty-state">Không có sản phẩm nào</div></td></tr>'}
@@ -356,7 +373,8 @@
     openDialog(isNew ? 'Thêm sản phẩm' : 'Sửa sản phẩm', `<div class="form">${PRODUCT_FIELDS().map(f => field(f, p[f.key])).join('')}</div>`, () => {
       const v = readForm($('[data-dialog-body]'));
       if (!v.name) { toast('Vui lòng nhập tên sản phẩm'); return false; }
-      if (v.price == null) { toast('Vui lòng nhập giá bán'); return false; }
+      if (v.price == null || v.price < 0) { toast('Vui lòng nhập giá bán'); return false; }
+      if (!v.img) { toast('Vui lòng chọn ảnh chính'); return false; }
       const item = { ...p, ...v };
       if (isNew) D.products.unshift(item); else D.products[i] = item;
       save(isNew ? 'Đã thêm sản phẩm' : 'Đã lưu sản phẩm');
@@ -404,7 +422,7 @@
         { key: 'img', label: 'Ảnh đại diện', type: 'image', full: true }
       ],
       make: () => ({ id: '', name: '', group: D.groups[0]?.id, img: '' }),
-      beforeSave: (v, old) => { if (!old.id) v.id = slug(v.name); return v; },
+      beforeSave: (v, old) => { if (!old.id) v.id = uniqueId(slug(v.name), D.categories.map(c => c.id).concat(D.groups.map(g => g.id))); return v; },
       canDelete: it => { const n = D.products.filter(p => p.cat === it.id).length; return n ? `Danh mục này còn ${n} sản phẩm. Hãy chuyển sản phẩm sang danh mục khác trước khi xóa.` : ''; },
       summary: it => ({ img: it.img, contain: true, title: it.name, sub: `${D.groups.find(g => g.id === it.group)?.name || ''} · ${D.products.filter(p => p.cat === it.id).length} sản phẩm` })
     },
@@ -462,7 +480,7 @@
         { key: 'bannerImages', label: 'Ảnh trên banner (2 ảnh)', type: 'gallery', full: true }
       ],
       make: () => ({ id: '', name: '', bannerTag: '', bannerTitle: '', bannerImages: [], color: 'lavender' }),
-      beforeSave: (v, old) => { if (!old.id) v.id = slug(v.name); return v; },
+      beforeSave: (v, old) => { if (!old.id) v.id = uniqueId(slug(v.name), D.groups.map(g => g.id).concat(D.categories.map(c => c.id))); return v; },
       canDelete: it => { const n = D.categories.filter(c => c.group === it.id).length; return n ? `Khu này còn ${n} danh mục. Hãy chuyển danh mục sang khu khác trước khi xóa.` : ''; },
       summary: it => ({ img: it.bannerImages?.[0] || '', contain: true, title: it.name, sub: `<span class="swatch tone-${esc(it.color)}"></span>${esc(it.bannerTitle)}` })
     },
@@ -480,7 +498,15 @@
         { key: 'small', label: 'Chữ nhỏ trên phiếu', placeholder: 'VD: GIẢM' }
       ],
       make: () => ({ code: '', type: 'amount', value: 5, min: 50, title: '', note: '', big: '', small: 'GIẢM' }),
-      beforeSave: v => { v.code = v.code.toUpperCase().replace(/\s+/g, ''); v.value = v.value || 0; v.min = v.min || 0; return v; },
+      beforeSave: (v, old) => {
+        v.code = v.code.toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+        if (!v.code) { toast('Vui lòng nhập mã'); return null; }
+        if (D.vouchers.some(x => x !== old && x.code === v.code)) { toast('Mã này đã tồn tại'); return null; }
+        v.value = v.value || 0; v.min = v.min || 0;
+        if (!v.big) v.big = v.type === 'ship' ? 'FREE' : v.type === 'percent' ? v.value + '%' : '$' + v.value;
+        if (!v.small) v.small = v.type === 'ship' ? 'SHIP' : 'GIẢM';
+        return v;
+      },
       summary: it => ({ title: `${it.code} · ${it.title}`, sub: esc(it.note) })
     },
     posts: {
@@ -506,6 +532,9 @@
       let v = { ...old, ...readForm($('[data-dialog-body]')) };
       if (v.images) v.images = v.images.slice(0, 3);
       if (cfg.beforeSave) v = cfg.beforeSave(v, old);
+      if (!v) return false;
+      const first = cfg.fields()[0];
+      if (first && !first.type && !String(v[first.key] || '').trim()) { toast('Vui lòng nhập ' + first.label.toLowerCase()); return false; }
       if (isNew) arr.push(v); else arr[i] = v;
       save('Đã lưu');
       route();
@@ -648,15 +677,20 @@
     });
     if (!res.ok) {
       const t = await res.text();
-      throw new Error(`${res.status} ${res.status === 401 ? 'Token không hợp lệ hoặc đã hết hạn' : res.status === 403 || res.status === 404 ? 'Token không có quyền ghi vào repo này' : t.slice(0, 160)}`);
+      throw new Error(`${res.status} ${res.status === 401 ? 'Token không hợp lệ hoặc đã hết hạn' : res.status === 403 ? 'Token không có quyền ghi vào repo này' : res.status === 404 ? 'Không tìm thấy repo hoặc nhánh, hoặc token không được cấp quyền cho repo này' : res.status === 409 ? 'Repo vừa thay đổi, hãy thử xuất bản lại' : t.slice(0, 160)}`);
     }
     return res.json();
   }
   const utf8b64 = str => { const b = new TextEncoder().encode(str); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); };
 
+  let publishing = false;
   async function publish() {
+    if (publishing) return;
     if (!ghCfg()) { location.hash = '#publish'; toast('Hãy kết nối GitHub trước khi xuất bản'); return; }
+    if (staleDraft && !(await confirmBox('Bản nháp trên máy này được tạo từ phiên bản website cũ hơn bản đang chạy (có thể đã có người xuất bản từ máy khác). Xuất bản sẽ ghi đè các thay đổi đó. Tiếp tục?', 'Vẫn xuất bản'))) return;
     if (!isDirty() && !(await confirmBox('Không có thay đổi mới. Vẫn xuất bản lại?', 'Xuất bản'))) return;
+    publishing = true;
+    $$('[data-action="publish"]').forEach(b => { b.disabled = true; });
     if (location.hash !== '#publish') location.hash = '#publish';
     await new Promise(r => setTimeout(r, 50));
     const log = $('[data-log]'); log.hidden = false; log.textContent = '';
@@ -694,13 +728,17 @@
       const newTree = await gh('/git/trees', { method: 'POST', body: { base_tree: commit.tree.sha, tree } });
       const newCommit = await gh('/git/commits', { method: 'POST', body: { message: 'Cập nhật nội dung cửa hàng từ trang quản trị', tree: newTree.sha, parents: [head] } });
       await gh(`/git/refs/heads/${g.branch}`, { method: 'PATCH', body: { sha: newCommit.sha } });
-      D = data; BASE = clone(data); save();
+      // Giữ những chỉnh sửa làm trong lúc đang xuất bản, chỉ thay đường dẫn ảnh đã tải lên
+      const swap = o => { for (const k in o) { const v = o[k]; if (typeof v === 'string' && seen.has(v)) o[k] = seen.get(v); else if (v && typeof v === 'object') swap(v); } };
+      swap(D);
+      BASE = clone(data); ls.set(BASE_KEY, stable(BASE)); save();
       say('Xuất bản thành công. Website sẽ cập nhật sau khoảng 1 phút.');
       toast('Đã xuất bản');
     } catch (err) {
       say('Lỗi: ' + err.message);
       toast('Xuất bản chưa thành công');
     } finally {
+      publishing = false;
       $$('[data-action="publish"]').forEach(b => { b.disabled = false; });
     }
   }
@@ -715,7 +753,7 @@
     if (d.action === 'dialog-save') { if (dialogSave && dialogSave() !== false) closeDialog(); return; }
     if (d.action === 'toggle-side') { $('[data-side]').classList.toggle('is-open'); return; }
     if (d.action === 'logout') { try { sessionStorage.removeItem(SESSION_KEY); } catch { /* bỏ qua */ } location.reload(); return; }
-    if (d.action === 'preview') { save(); window.open('index.html?preview=1', '_blank'); return; }
+    if (d.action === 'preview') { save(); if (saveFailed) return; window.open('index.html?preview=1', '_blank'); return; }
     if (d.action === 'publish') { publish(); return; }
     if (d.action === 'new-product') { e.preventDefault(); if (currentPage() !== 'products') location.hash = '#products'; setTimeout(() => editProduct(null), 30); return; }
     if (d.action === 'export') {
@@ -724,7 +762,7 @@
       a.click(); URL.revokeObjectURL(a.href); return;
     }
     if (d.action === 'discard') {
-      if (await confirmBox('Bỏ toàn bộ thay đổi chưa xuất bản và lấy lại nội dung đang chạy trên website?', 'Bỏ thay đổi')) { D = clone(BASE); ls.del(DRAFT_KEY); route(); toast('Đã khôi phục bản đang chạy'); }
+      if (await confirmBox('Bỏ toàn bộ thay đổi chưa xuất bản và lấy lại nội dung đang chạy trên website?', 'Bỏ thay đổi')) { D = clone(BASE); ls.del(DRAFT_KEY); ls.del(BASE_KEY); route(); toast('Đã khôi phục bản đang chạy'); }
       return;
     }
     if (d.action === 'test-gh') {
@@ -770,7 +808,7 @@
       f.text().then(txt => {
         const data = JSON.parse(txt.replace(/^window\.JAJU_STORE\s*=\s*/, '').replace(/;\s*$/, ''));
         if (!data.settings || !Array.isArray(data.products)) throw new Error('File không đúng định dạng');
-        D = data; save('Đã khôi phục từ file'); route();
+        D = normalize(data); save('Đã khôi phục từ file'); route();
       }).catch(err => toast('Không đọc được file: ' + err.message));
     }
   });
